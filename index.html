@@ -278,9 +278,12 @@ a{color:var(--accent);text-decoration:none}.a:hover{text-decoration:underline}
       <div class="step"><span class="step-num">4</span><span>Paste them below and click <b>Connect</b></span></div>
     </div>
     <div class="backup-box" style="background:#0f1117;font-size:.75rem;color:#94a3b8;margin-bottom:14px">
-      <b style="color:#6c63ff">Run this SQL in Supabase SQL Editor:</b><br><br>
-      <code>create table expenses (id bigint primary key generated always as identity, name text, amt numeric, cat text, date text, note text, created_at timestamptz default now());</code><br><br>
-      <code>create table categories (id bigint primary key generated always as identity, name text unique, color text);</code>
+      <b style="color:#6c63ff">Step 1 — Run this SQL in Supabase SQL Editor:</b><br><br>
+      <code>create table if not exists expenses (id bigint primary key generated always as identity, name text, amt numeric, cat text, date text, note text, created_at timestamptz default now());</code><br><br>
+      <code>create table if not exists categories (id bigint primary key generated always as identity, name text unique, color text);</code><br><br>
+      <b style="color:#ef4444">Step 2 — Disable Row Level Security (REQUIRED or writes will be blocked):</b><br><br>
+      <code>alter table expenses disable row level security;</code><br>
+      <code>alter table categories disable row level security;</code>
     </div>
     <div id="cloudConnected" style="display:none" class="connected-info">✅ Connected to Supabase! Your data syncs across all devices.</div>
     <div id="cloudForm">
@@ -350,17 +353,20 @@ let categories = JSON.parse(localStorage.getItem('exp_cats3')||'null')||[
 
 let expenses = JSON.parse(localStorage.getItem('exp_data3')||'null');
 if(!expenses){
-  const d=n=>{const x=new Date();x.setDate(n);return x.toISOString().split('T')[0]};
-  expenses=[
-    {id:1,name:'Grocery run',amt:2400,cat:'Food & Dining',date:d(2),note:''},
-    {id:2,name:'Rent',amt:15000,cat:'Housing & Rent',date:d(1),note:'Monthly'},
-    {id:3,name:'Metro pass',amt:800,cat:'Transport',date:d(3),note:''},
-    {id:4,name:'Netflix',amt:649,cat:'Entertainment',date:d(5),note:''},
-    {id:5,name:'Medicines',amt:350,cat:'Health',date:d(7),note:'Pharmacy'},
-    {id:6,name:'Online course',amt:1999,cat:'Education',date:d(10),note:'Udemy'},
-    {id:7,name:'Electricity bill',amt:1200,cat:'Utilities',date:d(12),note:''},
-  ];
-  saveLocal();
+  if(SB_URL&&SB_KEY){ expenses=[]; /* cloud will populate */ }
+  else {
+    const d=n=>{const x=new Date();x.setDate(n);return x.toISOString().split('T')[0]};
+    expenses=[
+      {id:1,name:'Grocery run',amt:2400,cat:'Food & Dining',date:d(2),note:''},
+      {id:2,name:'Rent',amt:15000,cat:'Housing & Rent',date:d(1),note:'Monthly'},
+      {id:3,name:'Metro pass',amt:800,cat:'Transport',date:d(3),note:''},
+      {id:4,name:'Netflix',amt:649,cat:'Entertainment',date:d(5),note:''},
+      {id:5,name:'Medicines',amt:350,cat:'Health',date:d(7),note:'Pharmacy'},
+      {id:6,name:'Online course',amt:1999,cat:'Education',date:d(10),note:'Udemy'},
+      {id:7,name:'Electricity bill',amt:1200,cat:'Utilities',date:d(12),note:''},
+    ];
+    saveLocal();
+  }
 }
 
 function saveLocal(){
@@ -382,10 +388,11 @@ async function loadFromSupabase(){
   try{
     const [exps,cats]=await Promise.all([sbFetch('expenses?select=*&order=date.desc'),sbFetch('categories?select=*')]);
     expenses=exps.map(e=>({...e,id:e.id}));
-    if(cats.length)categories=cats;
-    saveLocal();
-    toast('Loaded from cloud ✅','ok');
-  }catch(e){toast('Cloud load failed: '+e.message,'err')}
+    if(cats.length){categories=cats;}
+    else if(categories.length){await saveCatsCloud();} // push local cats to cloud if cloud is empty
+    saveLocal();populateCatDropdowns();render();
+    toast('Synced from cloud ✅','ok');
+  }catch(e){toast('⚠ Sync failed: '+e.message+' — Fix Supabase RLS (see Data & Sync tab)','err')}
 }
 
 async function saveExpenseCloud(exp){
@@ -394,7 +401,7 @@ async function saveExpenseCloud(exp){
     if(typeof id==='number'&&id>1000000000000){
       // local temp id, insert
       const res=await sbFetch('expenses',{method:'POST',body:JSON.stringify([data])});
-      if(res[0])exp.id=res[0].id;
+      if(res[0]){exp.id=res[0].id;saveLocal();} // persist Supabase ID locally
     }else{
       await sbFetch('expenses?id=eq.'+id,{method:'PATCH',body:JSON.stringify(data)});
     }
