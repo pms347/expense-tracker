@@ -2,862 +2,766 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Expense Tracker</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f1117">
+<link rel="manifest" href="manifest.json">
+<title>Expense Tracker</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0f1117;--card:#1a1d27;--card2:#21253a;--accent:#6c63ff;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;--text:#e2e8f0;--muted:#94a3b8;--border:#2d3148}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;min-height:100vh}
-/* SETUP SCREEN */
-.setup-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-.setup-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:520px;box-shadow:0 24px 80px #00000088}
-.setup-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
-.setup-logo h1{font-size:1.4rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.setup-card h2{font-size:1.05rem;font-weight:700;margin-bottom:6px}
-.setup-card p{font-size:.82rem;color:var(--muted);margin-bottom:22px;line-height:1.6}
-.step-block{background:var(--card2);border-radius:12px;padding:16px;margin-bottom:14px;border:1px solid var(--border)}
-.step-block h3{font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.step-block p{font-size:.78rem;color:var(--muted);margin-bottom:8px;line-height:1.5}
-.code-block{background:#0f1117;border-radius:8px;padding:10px 13px;font-size:.72rem;color:#a5b4fc;font-family:monospace;line-height:1.6;margin-bottom:8px;border:1px solid #2d3148;word-break:break-all}
-.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
-.fg label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-.fg input{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;color:var(--text);font-size:.88rem;outline:none;transition:border-color .2s}
-.fg input:focus{border-color:var(--accent)}
-.btn-connect{width:100%;padding:13px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:10px;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;margin-top:6px;transition:opacity .2s}
-.btn-connect:hover{opacity:.88}
-.setup-warn{font-size:.75rem;color:var(--red);margin-top:8px;min-height:16px}
-.skip-link{text-align:center;margin-top:14px;font-size:.78rem;color:var(--muted);cursor:pointer}
-.skip-link span{color:var(--accent);text-decoration:underline;cursor:pointer}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1117;--card:#1a1d27;--card2:#21253a;
+  --accent:#6c63ff;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
+  --text:#e2e8f0;--muted:#94a3b8;--border:#2d3148;
+  --nav:60px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',Roboto,sans-serif}
+/* SCREENS */
+.screen{position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav) + var(--sab) + 20px);display:none}
+.screen.active{display:block}
+.safe-top{height:var(--sat)}
 /* HEADER */
-header{background:linear-gradient(135deg,#6c63ff1a,#3b82f60d);border-bottom:1px solid var(--border);padding:13px 22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-header h1{font-size:1.2rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.sync-badge{font-size:.68rem;padding:4px 10px;border-radius:20px;border:1px solid;font-weight:700;cursor:pointer}
-.badge-local{background:#f59e0b15;color:#f59e0b;border-color:#f59e0b44}
-.badge-cloud{background:#22c55e15;color:#22c55e;border-color:#22c55e44}
-.badge-syncing{background:#3b82f615;color:#3b82f6;border-color:#3b82f644}
-#hDate{font-size:.75rem;color:var(--muted)}
-/* TABS */
-.tabs{display:flex;gap:2px;background:var(--card);border-bottom:1px solid var(--border);padding:0 22px;overflow-x:auto}
-.tab{padding:12px 16px;font-size:.83rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
-.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.tab:hover:not(.active){color:var(--text)}
-.tab-content{display:none}.tab-content.active{display:block}
-.container{max-width:1200px;margin:0 auto;padding:18px 14px}
-/* CARDS */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:18px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px;position:relative;overflow:hidden;transition:transform .15s}
-.card:hover{transform:translateY(-2px)}
-.card::before{content:'';position:absolute;top:-25px;right:-25px;width:70px;height:70px;border-radius:50%;opacity:.12}
-.card.c1::before{background:#6c63ff}.card.c2::before{background:#f59e0b}.card.c3::before{background:#22c55e}.card.c4::before{background:#3b82f6}
-.card label{font-size:.67rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);display:block;margin-bottom:5px}
-.card .val{font-size:1.45rem;font-weight:800}
-.card .sub{font-size:.68rem;color:var(--muted);margin-top:3px}
-/* TOOLBAR */
-.toolbar{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 16px;margin-bottom:16px}
-.toolbar-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
-.toolbar-top h3{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700}
-.filters{display:flex;flex-wrap:wrap;gap:9px;align-items:flex-end}
-.fg2{display:flex;flex-direction:column;gap:4px}
-.fg2 label{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-.fg2 input,.fg2 select{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-size:.82rem;outline:none;transition:border-color .2s;min-width:115px}
-.fg2 input:focus,.fg2 select:focus{border-color:var(--accent)}
-.fg2 select option{background:#1a1d27}
-.btns{display:flex;flex-wrap:wrap;gap:7px}
-.btn{padding:7px 13px;border-radius:7px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px;white-space:nowrap}
-.btn:hover{filter:brightness(1.18)}
-.btn-accent{background:var(--accent);color:#fff}
-.btn-green{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
-.btn-red{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
-.btn-yellow{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
-.btn-muted{background:#94a3b818;color:#94a3b8;border:1px solid #94a3b830}
-.btn-blue{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
-/* GRID */
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-@media(max-width:700px){.grid2{grid-template-columns:1fr}}
-.panel{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:18px}
-.panel h2{font-size:.9rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-/* FORM */
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
-@media(max-width:480px){.form-row{grid-template-columns:1fr}}
-.form-group{display:flex;flex-direction:column;gap:4px}
-.form-group label{font-size:.67rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.form-group input,.form-group select,.form-group textarea{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;color:var(--text);font-size:.86rem;outline:none;transition:border-color .2s;font-family:inherit}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
-.form-group select option{background:#1a1d27}
-.btn-submit{width:100%;padding:11px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:8px;color:#fff;font-size:.88rem;font-weight:800;cursor:pointer;margin-top:5px;transition:opacity .2s}
-.btn-submit:hover{opacity:.88}
+.hdr{background:var(--bg);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;padding-top:calc(14px + var(--sat))}
+.hdr h1{font-size:1.08rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sab);z-index:30}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;color:var(--muted);font-size:.62rem;font-weight:600;gap:3px;background:none;border:none;cursor:pointer;transition:color .15s}
+.ni.on{color:var(--accent)}
+.ni-ico{font-size:1.25rem;line-height:1}
+/* AUTH */
+.auth-wrap{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;overflow-y:auto}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 22px;width:100%;max-width:400px}
+.auth-logo{text-align:center;margin-bottom:22px}
+.auth-logo .ico{font-size:2.4rem;margin-bottom:6px}
+.auth-logo h2{font-size:1.4rem;font-weight:900;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-logo p{font-size:.78rem;color:var(--muted);margin-top:3px}
+.atabs{display:flex;background:var(--card2);border-radius:10px;padding:3px;margin-bottom:18px}
+.atab{flex:1;padding:9px;text-align:center;font-size:.86rem;font-weight:700;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s}
+.atab.on{background:var(--accent);color:#fff}
+/* FIELDS */
+.fi{margin-bottom:12px}
+.fi label{display:block;font-size:.69rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:5px}
+.fi input,.fi select,.fi textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 13px;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none;appearance:none}
+.fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent)}
+.fi select option{background:#1a1d27}
+.fi textarea{resize:none}
+.fi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* BUTTONS */
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:12px;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer;transition:opacity .2s;letter-spacing:.02em}
+.btn-primary:active{opacity:.82}
+.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn{padding:9px 14px;border-radius:9px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.95)}
+.bsm{padding:7px 11px;font-size:.75rem}
+.bg{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.br{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
+.bm{background:#94a3b815;color:#94a3b8;border:1px solid #94a3b830}
+.ba{background:var(--accent);color:#fff}
+.by{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
+.bb{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
+.err{color:var(--red);font-size:.78rem;margin-top:8px;text-align:center;min-height:16px}
+/* STAT GRID */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 12px 0}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:-18px;right:-18px;width:55px;height:55px;border-radius:50%;opacity:.13}
+.sc.c1::before{background:#6c63ff}.sc.c2::before{background:#f59e0b}.sc.c3::before{background:#22c55e}.sc.c4::before{background:#3b82f6}
+.sc label{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px}
+.sc .v{font-size:1.3rem;font-weight:800;line-height:1.2}
+.sc .s{font-size:.65rem;color:var(--muted);margin-top:2px}
+/* PANEL */
+.pnl{background:var(--card);border:1px solid var(--border);border-radius:13px;margin:10px 12px;overflow:hidden}
+.pnl-hd{font-size:.86rem;font-weight:700;padding:13px 13px 0;display:flex;align-items:center;gap:6px}
+.pnl-body{padding:12px 13px}
 /* CHART */
-.chart-wrap{position:relative;height:195px;display:flex;align-items:center;justify-content:center}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:.69rem;color:var(--muted)}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-/* TABLE */
-.tbl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:7px}
-.result-info{font-size:.73rem;color:var(--muted)}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:.82rem}
-th{text-align:left;padding:8px 11px;color:var(--muted);font-size:.67rem;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border);white-space:nowrap}
-td{padding:9px 11px;border-bottom:1px solid #1e223544;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#ffffff05}
-.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700}
-.act-btn{background:none;border:1px solid;border-radius:5px;padding:3px 8px;cursor:pointer;font-size:.7rem;font-weight:600;margin:0 2px;transition:background .15s}
-.act-edit{color:#3b82f6;border-color:#3b82f633}.act-edit:hover{background:#3b82f622}
-.act-del{color:#ef4444;border-color:#ef444433}.act-del:hover{background:#ef444422}
-.empty{text-align:center;color:var(--muted);padding:28px;font-size:.86rem}
-/* CATEGORIES */
-.cat-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;max-height:340px;overflow-y:auto}
-.cat-item{display:flex;align-items:center;gap:9px;background:var(--card2);border-radius:8px;padding:9px 13px;border:1px solid var(--border)}
-.cat-name-input{flex:1;background:transparent;border:none;color:var(--text);font-size:.86rem;outline:none;font-family:inherit}
-.cat-name-input:focus{border-bottom:1px solid var(--accent)}
-.add-cat-row{display:flex;gap:7px;align-items:center}
-.add-cat-row input[type=text]{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--text);font-size:.86rem;outline:none}
-.add-cat-row input[type=text]:focus{border-color:var(--accent)}
-.add-cat-row input[type=color]{width:40px;height:36px;padding:2px;border:1px solid var(--border);background:var(--card2);cursor:pointer;border-radius:7px;flex:none}
-.warn{font-size:.72rem;color:var(--yellow);margin-top:5px;min-height:15px}
-/* SETTINGS */
-.sbox{background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:14px}
-.sbox h3{font-size:.88rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:7px}
-.sbox p{font-size:.78rem;color:var(--muted);margin-bottom:11px;line-height:1.6}
-.cblock{background:#0a0c13;border-radius:7px;padding:10px 13px;font-size:.72rem;color:#a5b4fc;font-family:monospace;line-height:1.7;margin-bottom:8px;border:1px solid #2d3148;word-break:break-all;white-space:pre-wrap}
-.connected-pill{background:#22c55e15;border:1px solid #22c55e33;border-radius:8px;padding:10px 13px;font-size:.8rem;color:#22c55e;display:flex;align-items:center;gap:8px;margin-bottom:12px}
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:#00000099;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:22px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px #00000088}
-.modal h2{font-size:.98rem;font-weight:800;margin-bottom:16px}
-.modal-close{float:right;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;padding:2px 6px;border-radius:4px}
-.modal-close:hover{background:var(--card2)}
-.modal-footer{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.cwrap{height:175px;position:relative;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* EXPENSE ITEMS */
+.ei{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
+.ei:last-child{border-bottom:none}
+.edot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:2px}
+.ebody{flex:1;min-width:0}
+.en{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.em{font-size:.7rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eamt{font-weight:800;font-size:.92rem;white-space:nowrap;margin-bottom:5px;text-align:right}
+.eact{display:flex;gap:5px;justify-content:flex-end}
+.eact button{border-radius:7px;border:1px solid;padding:4px 9px;font-size:.72rem;font-weight:700;cursor:pointer;background:none}
+.eact .ed{color:#3b82f6;border-color:#3b82f633}.eact .ed:hover{background:#3b82f615}
+.eact .ex{color:#ef4444;border-color:#ef444433}.eact .ex:hover{background:#ef444415}
+/* FILTER CHIPS */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:10px 12px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:.76rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .2s}
+.chip.on{border-color:var(--accent);color:#fff}
+/* DATE ROW */
+.drow{display:flex;gap:7px;padding:0 12px 8px;align-items:center}
+.drow input{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.78rem;outline:none;-webkit-appearance:none}
+.drow input:focus{border-color:var(--accent)}
+.drow span{color:var(--muted);font-size:.75rem;flex-shrink:0}
+/* CAT ITEM */
+.ci{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
+.ci:last-child{border-bottom:none}
+.csw{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.cni{flex:1;background:transparent;border:none;color:var(--text);font-size:.9rem;outline:none;font-family:inherit}
+.cni:focus{border-bottom:1px solid var(--accent)}
+/* BADGE */
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:700}
+/* SHEET (bottom modal) */
+.sov{position:fixed;inset:0;background:#00000099;z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(3px)}
+.sov.show{display:flex}
+.sh{background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px;padding-bottom:calc(18px + var(--sab));width:100%;max-height:90vh;overflow-y:auto}
+.sh-hdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
+.sh h2{font-size:.98rem;font-weight:800;margin-bottom:14px}
+.sh-ftr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+/* FAB */
+.fab{position:fixed;right:18px;background:linear-gradient(135deg,#6c63ff,#3b82f6);color:#fff;width:52px;height:52px;border-radius:26px;border:none;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 18px #6c63ff55;z-index:20;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.93)}
+/* SYNC */
+.spill{font-size:.67rem;padding:4px 9px;border-radius:20px;border:1px solid;font-weight:700}
+.sc-ok{background:#22c55e15;color:#22c55e;border-color:#22c55e44}
+.sc-lo{background:#f59e0b15;color:#f59e0b;border-color:#f59e0b44}
+.sc-er{background:#ef444415;color:#ef4444;border-color:#ef444444}
+.sc-sy{background:#3b82f615;color:#3b82f6;border-color:#3b82f644}
+/* PROFILE */
+.pav{width:58px;height:58px;border-radius:29px;background:linear-gradient(135deg,#6c63ff,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;margin:0 auto 8px;color:#fff}
+/* SETTINGS ROW */
+.sr{display:flex;align-items:center;justify-content:space-between;padding:13px 13px;border-bottom:1px solid var(--border)}
+.sr:last-child{border-bottom:none}
+.sr-l{font-size:.88rem;font-weight:600}
+.sr-s{font-size:.72rem;color:var(--muted);margin-top:2px}
+.section-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:10px 13px 4px}
 /* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:#1a1d27;border:1px solid var(--border);border-radius:9px;padding:11px 16px;font-size:.83rem;color:var(--text);box-shadow:0 8px 24px #00000066;z-index:500;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px}
-.toast.show{transform:translateY(0);opacity:1}
+.toast{position:fixed;top:calc(var(--sat) + 14px);left:50%;transform:translateX(-50%) translateY(-70px);background:#1a1d27;border:1px solid var(--border);border-radius:12px;padding:10px 17px;font-size:.83rem;color:var(--text);z-index:200;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 24px #00000077;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{border-left:3px solid #22c55e}.toast.err{border-left:3px solid #ef4444}.toast.info{border-left:3px solid #3b82f6}
+/* LOADING */
+.ldg{display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;color:var(--muted);gap:10px}
+.spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .65s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 18px;color:var(--muted);gap:6px;text-align:center}
+.empty .ico{font-size:2.2rem;margin-bottom:4px}
+.empty p{font-size:.83rem}
+/* RESPONSIVE */
+@media(min-width:540px){
+  .bnav,.screen,.fab{max-width:540px;left:50%;right:auto;transform:translateX(-50%)}
+  .bnav{width:540px}
+  .toast{left:calc(50% + 0px)}
+  .sgrid{grid-template-columns:repeat(4,1fr)}
+}
+/* Prevent flicker */
+input[type=date]{color-scheme:dark}
 </style>
 </head>
 <body>
 
-<!-- ====== SETUP SCREEN ====== -->
-<div class="setup-screen" id="setupScreen">
-  <div class="setup-card">
-    <div class="setup-logo">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="3" fill="#6c63ff" opacity=".3"/><path d="M7 12h2v5H7zm4-4h2v9h-2zm4 2h2v7h-2z" fill="#6c63ff"/></svg>
-      <h1>Expense Tracker</h1>
+<!-- ═══ AUTH ═══ -->
+<div id="authWrap" class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="ico">💰</div>
+      <h2>Expense Tracker</h2>
+      <p>Track smarter, spend wiser</p>
     </div>
-    <h2>Connect your cloud database</h2>
-    <p>Your data will be stored in <b>Supabase</b> — a free database. Once connected, your expenses load on <b>any browser, any device, even incognito</b>. Setup takes 3 minutes.</p>
-
-    <div class="step-block">
-      <h3>① Create free Supabase project</h3>
-      <p>Go to <a href="https://supabase.com" target="_blank" style="color:#6c63ff">supabase.com</a> → Sign up → New Project → wait ~2 min for it to start.</p>
+    <div class="atabs">
+      <div class="atab on" id="atL" onclick="setMode('login')">Sign In</div>
+      <div class="atab" id="atS" onclick="setMode('signup')">Sign Up</div>
     </div>
-
-    <div class="step-block">
-      <h3>② Run this SQL (one time only)</h3>
-      <p>In your project → <b>SQL Editor</b> → paste and run:</p>
-      <div class="code-block">create table if not exists expenses (id bigint primary key generated always as identity, name text, amt numeric, cat text, date text, note text, created_at timestamptz default now());
-
-create table if not exists categories (id bigint primary key generated always as identity, name text unique, color text);
-
-alter table expenses disable row level security;
-alter table categories disable row level security;</div>
-    </div>
-
-    <div class="step-block">
-      <h3>③ Paste your credentials below</h3>
-      <p>Project Settings → API → copy <b>Project URL</b> and <b>anon public key</b>.</p>
-      <div class="fg"><label>Project URL</label><input type="text" id="setupUrl" placeholder="https://xxxxxxxxxxxx.supabase.co"></div>
-      <div class="fg"><label>Anon Public Key</label><input type="text" id="setupKey" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9…"></div>
-      <p class="setup-warn" id="setupWarn"></p>
-      <button class="btn-connect" onclick="connectAndStart()">🔗 Connect & Start Tracking</button>
-    </div>
-    <div class="skip-link">Just testing? <span onclick="skipSetup()">Use local-only mode</span> (data won't sync across browsers)</div>
+    <div class="fi" id="nameF" style="display:none"><label>Your Name</label><input type="text" id="aName" placeholder="e.g. Priya" autocomplete="name"></div>
+    <div class="fi"><label>Email</label><input type="email" id="aEmail" placeholder="you@example.com" autocomplete="email"></div>
+    <div class="fi"><label>Password</label><input type="password" id="aPass" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn-primary" id="aBtn" onclick="doAuth()">Sign In</button>
+    <div class="err" id="aErr"></div>
   </div>
 </div>
 
-<!-- ====== MAIN APP ====== -->
-<div id="mainApp" style="display:none">
-<header>
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="18" rx="3" fill="#6c63ff" opacity=".3"/><path d="M7 12h2v5H7zm4-4h2v9h-2zm4 2h2v7h-2z" fill="#6c63ff"/></svg>
-  <h1>Expense Tracker</h1>
-  <div class="header-right">
-    <span class="sync-badge badge-local" id="syncBadge" onclick="switchTab('settings')">💾 Local</span>
-    <span id="hDate"></span>
-  </div>
-</header>
+<!-- ═══ MAIN APP ═══ -->
+<div id="app" style="display:none">
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
-  <div class="tab" onclick="switchTab('expenses')">🧾 Expenses</div>
-  <div class="tab" onclick="switchTab('categories')">🏷 Categories</div>
-  <div class="tab" onclick="switchTab('settings')">⚙ Settings</div>
-</div>
-
-<!-- DASHBOARD -->
-<div id="tab-dashboard" class="tab-content active">
-<div class="container">
-  <div class="cards">
-    <div class="card c1"><label>Total Spent</label><div class="val" id="cTotal">₹0</div><div class="sub">filtered view</div></div>
-    <div class="card c2"><label>Top Category</label><div class="val" id="cTop" style="font-size:.9rem;margin-top:6px">—</div><div class="sub" id="cTopAmt"></div></div>
-    <div class="card c3"><label>Transactions</label><div class="val" id="cCount">0</div><div class="sub">records shown</div></div>
-    <div class="card c4"><label>Avg per Entry</label><div class="val" id="cAvg">₹0</div><div class="sub">shown records</div></div>
-  </div>
-  <div class="toolbar">
-    <div class="toolbar-top">
-      <h3>🔍 Filters</h3>
-      <div class="btns">
-        <button class="btn btn-muted" onclick="clearFilters()">✕ Clear</button>
-        <button class="btn btn-green" onclick="exportCSV()">⬇ CSV</button>
-        <button class="btn btn-red" onclick="exportPDF()">⬇ PDF</button>
+  <!-- DASHBOARD -->
+  <div class="screen active" id="s0">
+    <div class="hdr">
+      <h1>💰 Expenses</h1>
+      <span class="spill sc-lo" id="pill">💾 Local</span>
+    </div>
+    <div class="sgrid">
+      <div class="sc c1"><label>Total Spent</label><div class="v" id="cT">₹0</div><div class="s">filtered</div></div>
+      <div class="sc c2"><label>Top Category</label><div class="v" id="cTop" style="font-size:.82rem;margin-top:4px">—</div><div class="s" id="cTopA"></div></div>
+      <div class="sc c3"><label>Transactions</label><div class="v" id="cN">0</div><div class="s">records</div></div>
+      <div class="sc c4"><label>Avg / Entry</label><div class="v" id="cA">₹0</div><div class="s">shown</div></div>
+    </div>
+    <div class="pnl">
+      <div class="pnl-hd">📊 By Category</div>
+      <div class="pnl-body">
+        <div class="cwrap"><canvas id="donut"></canvas></div>
+        <div class="legend" id="leg"></div>
       </div>
     </div>
-    <div class="filters">
-      <div class="fg2"><label>From</label><input type="date" id="fFrom" onchange="render()"></div>
-      <div class="fg2"><label>To</label><input type="date" id="fTo" onchange="render()"></div>
-      <div class="fg2"><label>Category</label><select id="fCatFilter" onchange="render()"><option value="">All</option></select></div>
-      <div class="fg2"><label>Sort</label>
-        <select id="fSort" onchange="render()">
-          <option value="date-desc">Date ↓ Newest</option>
-          <option value="date-asc">Date ↑ Oldest</option>
-          <option value="amt-desc">Amount ↓ High</option>
-          <option value="amt-asc">Amount ↑ Low</option>
-        </select>
+    <div class="pnl">
+      <div class="pnl-hd">📈 6-Month Trend</div>
+      <div class="pnl-body" style="padding-bottom:10px">
+        <div class="cwrap" style="height:145px"><canvas id="bar"></canvas></div>
       </div>
     </div>
+    <div style="height:8px"></div>
+    <button class="fab" id="fabBtn" style="bottom:calc(var(--nav) + var(--sab) + 14px)" onclick="openAdd()">+</button>
   </div>
-  <div class="grid2">
-    <div class="panel">
-      <h2>➕ Add Expense</h2>
-      <div class="form-row">
-        <div class="form-group"><label>Description</label><input type="text" id="eName" placeholder="e.g. Grocery"></div>
-        <div class="form-group"><label>Amount (₹)</label><input type="number" id="eAmt" placeholder="0" min="0"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Category</label><select id="eCat"></select></div>
-        <div class="form-group"><label>Date</label><input type="date" id="eDate"></div>
-      </div>
-      <div class="form-group" style="margin-bottom:4px"><label>Note (optional)</label><textarea id="eNote" rows="2" placeholder="Any extra details…" style="resize:none"></textarea></div>
-      <button class="btn-submit" id="addBtn" onclick="addExpense()">+ Save Expense</button>
-    </div>
-    <div class="panel">
-      <h2>📊 By Category</h2>
-      <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
-      <div class="legend" id="donutLegend"></div>
-    </div>
-  </div>
-  <div class="panel" style="margin-bottom:16px">
-    <h2>📈 6-Month Trend</h2>
-    <div class="chart-wrap" style="height:180px"><canvas id="barChart"></canvas></div>
-  </div>
-</div>
-</div>
 
-<!-- EXPENSES -->
-<div id="tab-expenses" class="tab-content">
-<div class="container">
-  <div class="panel">
-    <div class="tbl-header">
-      <h2 style="margin:0">🧾 All Expenses</h2>
-      <div class="btns">
-        <span class="result-info" id="resultInfo"></span>
-        <button class="btn btn-green" onclick="exportCSV()">⬇ CSV</button>
-        <button class="btn btn-red" onclick="exportPDF()">⬇ PDF</button>
+  <!-- EXPENSES -->
+  <div class="screen" id="s1">
+    <div class="hdr">
+      <h1>🧾 Expenses</h1>
+      <div style="display:flex;gap:6px">
+        <button class="btn bsm bg" onclick="expCSV()">CSV</button>
+        <button class="btn bsm br" onclick="expPDF()">PDF</button>
       </div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th><th>Note</th><th>Actions</th></tr></thead>
-        <tbody id="expTable"></tbody>
-      </table>
-      <div id="emptyMsg" class="empty" style="display:none">No expenses found. Add one from the Dashboard!</div>
+    <div class="chips" id="chips"></div>
+    <div class="drow">
+      <input type="date" id="fFrom" onchange="renderExp()">
+      <span>to</span>
+      <input type="date" id="fTo" onchange="renderExp()">
+      <button class="btn bsm bm" onclick="clrFilters()">✕</button>
     </div>
+    <div style="padding:0 13px 6px;font-size:.72rem;color:var(--muted)" id="eInfo"></div>
+    <div class="pnl" style="margin-bottom:8px"><div id="expList"></div></div>
   </div>
-</div>
+
+  <!-- CATEGORIES -->
+  <div class="screen" id="s2">
+    <div class="hdr">
+      <h1>🏷 Categories</h1>
+      <button class="btn bsm ba" onclick="openAddCat()">+ Add</button>
+    </div>
+    <div class="pnl"><div id="catEl"></div></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="s3">
+    <div class="hdr"><h1>👤 Profile</h1></div>
+    <div class="pnl">
+      <div class="pnl-body" style="text-align:center;padding:16px 13px">
+        <div class="pav" id="pav">?</div>
+        <div style="font-weight:800;font-size:1rem" id="pName">—</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:3px" id="pEmail">—</div>
+        <div style="margin-top:10px"><span class="spill sc-lo" id="pill2">💾 Local</span></div>
+      </div>
+    </div>
+    <div class="section-lbl">Data</div>
+    <div class="pnl">
+      <div class="sr"><div><div class="sr-l">Export Backup</div><div class="sr-s">Download JSON</div></div><button class="btn bsm by" onclick="expJSON()">⬇ JSON</button></div>
+      <div class="sr"><div><div class="sr-l">Import Backup</div><div class="sr-s">Restore from JSON</div></div><label class="btn bsm bb" style="cursor:pointer">⬆ JSON<input type="file" accept=".json" onchange="impJSON(event)" style="display:none"></label></div>
+    </div>
+    <div class="section-lbl">Account</div>
+    <div class="pnl">
+      <div class="sr"><div><div class="sr-l" style="color:var(--red)">Delete All Data</div><div class="sr-s">Cannot be undone</div></div><button class="btn bsm br" onclick="resetAll()">Delete</button></div>
+      <div class="sr"><div class="sr-l">Sign Out</div><button class="btn bsm bm" onclick="doSignOut()">Sign Out</button></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bnav">
+    <button class="ni on" id="n0" onclick="nav(0)"><span class="ni-ico">📊</span>Dashboard</button>
+    <button class="ni" id="n1" onclick="nav(1)"><span class="ni-ico">🧾</span>Expenses</button>
+    <button class="ni" id="n2" onclick="nav(2)"><span class="ni-ico">🏷</span>Categories</button>
+    <button class="ni" id="n3" onclick="nav(3)"><span class="ni-ico">👤</span>Profile</button>
+  </nav>
 </div>
 
-<!-- CATEGORIES -->
-<div id="tab-categories" class="tab-content">
-<div class="container">
-  <div class="panel" style="max-width:540px">
-    <h2>🏷 Manage Categories</h2>
-    <p style="font-size:.78rem;color:var(--muted);margin-bottom:14px">Click a name to rename it. Changes sync to cloud instantly.</p>
-    <div class="cat-list" id="catList"></div>
-    <div class="add-cat-row">
-      <input type="text" id="newCatName" placeholder="New category name…" maxlength="30">
-      <input type="color" id="newCatColor" value="#6c63ff">
-      <button class="btn btn-accent" onclick="addCategory()">+ Add</button>
+<!-- ADD EXPENSE SHEET -->
+<div class="sov" id="addSh" onclick="if(event.target===this)closeAdd()">
+  <div class="sh">
+    <div class="sh-hdl"></div>
+    <h2>➕ Add Expense</h2>
+    <div class="fi"><label>Description *</label><input type="text" id="eName" placeholder="e.g. Grocery"></div>
+    <div class="fi-row">
+      <div class="fi"><label>Amount (₹) *</label><input type="number" id="eAmt" placeholder="0" min="0" inputmode="decimal"></div>
+      <div class="fi"><label>Date *</label><input type="date" id="eDate"></div>
     </div>
-    <p class="warn" id="catWarn"></p>
+    <div class="fi"><label>Category</label><select id="eCat"></select></div>
+    <div class="fi"><label>Note (optional)</label><textarea id="eNote" rows="2" placeholder="Any extra details…"></textarea></div>
+    <button class="btn-primary" id="addBtn" onclick="addExp()">💾 Save Expense</button>
   </div>
-</div>
 </div>
 
-<!-- SETTINGS -->
-<div id="tab-settings" class="tab-content">
-<div class="container" style="max-width:660px">
-  <div class="sbox">
-    <h3>☁ Cloud Connection</h3>
-    <div id="settingsConnected" style="display:none" class="connected-pill">✅ Connected to Supabase — data syncs across all browsers & devices.</div>
-    <div id="settingsLocal">
-      <p>You're in local-only mode. Connect Supabase to sync across browsers.</p>
-      <div class="fg" style="margin-bottom:10px"><label>Project URL</label><input type="text" id="stUrl" placeholder="https://xxxx.supabase.co"></div>
-      <div class="fg" style="margin-bottom:10px"><label>Anon Public Key</label><input type="text" id="stKey" placeholder="eyJhbGci…"></div>
-      <button class="btn btn-accent" onclick="connectFromSettings()">🔗 Connect</button>
-    </div>
-    <div style="margin-top:12px" id="disconnectRow" style="display:none">
-      <button class="btn btn-muted" onclick="disconnect()">Disconnect Cloud</button>
-    </div>
-  </div>
-  <div class="sbox">
-    <h3>📦 Backup & Restore</h3>
-    <p>Export all data as JSON to back up or transfer to another device.</p>
-    <div class="btns">
-      <button class="btn btn-yellow" onclick="exportJSON()">⬇ Export JSON Backup</button>
-      <label class="btn btn-blue" style="cursor:pointer">⬆ Import JSON<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
-    </div>
-  </div>
-  <div class="sbox">
-    <h3 style="color:#ef4444">⚠ Danger Zone</h3>
-    <p>Delete all expenses. Categories will reset to default. Cannot be undone.</p>
-    <button class="btn btn-red" onclick="resetAll()">🗑 Delete All Data</button>
-  </div>
-</div>
-</div>
-
-</div><!-- end mainApp -->
-
-<!-- Edit Modal -->
-<div class="modal-overlay" id="editModal" style="display:none">
-  <div class="modal">
-    <button class="modal-close" onclick="closeEdit()">✕</button>
+<!-- EDIT SHEET -->
+<div class="sov" id="editSh" onclick="if(event.target===this)closeEdit()">
+  <div class="sh">
+    <div class="sh-hdl"></div>
     <h2>✏️ Edit Expense</h2>
-    <input type="hidden" id="editId">
-    <div class="form-row">
-      <div class="form-group"><label>Description</label><input type="text" id="editName"></div>
-      <div class="form-group"><label>Amount (₹)</label><input type="number" id="editAmt" min="0"></div>
+    <input type="hidden" id="eId">
+    <div class="fi"><label>Description</label><input type="text" id="edName"></div>
+    <div class="fi-row">
+      <div class="fi"><label>Amount (₹)</label><input type="number" id="edAmt" min="0" inputmode="decimal"></div>
+      <div class="fi"><label>Date</label><input type="date" id="edDate"></div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Category</label><select id="editCat"></select></div>
-      <div class="form-group"><label>Date</label><input type="date" id="editDate"></div>
+    <div class="fi"><label>Category</label><select id="edCat"></select></div>
+    <div class="fi"><label>Note</label><textarea id="edNote" rows="2"></textarea></div>
+    <div class="sh-ftr">
+      <button class="btn bm" style="justify-content:center;width:100%;padding:12px" onclick="closeEdit()">Cancel</button>
+      <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
     </div>
-    <div class="form-group"><label>Note</label><textarea id="editNote" rows="2" style="resize:none"></textarea></div>
-    <div class="modal-footer">
-      <button class="btn btn-muted" onclick="closeEdit()">Cancel</button>
-      <button class="btn btn-accent" onclick="saveEdit()">💾 Save Changes</button>
-    </div>
+  </div>
+</div>
+
+<!-- ADD CATEGORY SHEET -->
+<div class="sov" id="catSh" onclick="if(event.target===this)closeAddCat()">
+  <div class="sh">
+    <div class="sh-hdl"></div>
+    <h2>🏷 New Category</h2>
+    <div class="fi"><label>Name</label><input type="text" id="ncName" placeholder="e.g. Gym" maxlength="28"></div>
+    <div class="fi"><label>Colour</label><input type="color" id="ncCol" value="#6c63ff" style="width:100%;height:46px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer"></div>
+    <div class="err" id="catErr"></div>
+    <button class="btn-primary" onclick="addCat()">+ Add Category</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 <script>
-// ═══════════════════════════════════════════
-// CONFIG — paste your credentials here for
-// true zero-setup cross-browser access.
-// The anon key is safe to include in this file.
-// ═══════════════════════════════════════════
-const CONFIG = {
-  url: '',   // e.g. 'https://abcdefgh.supabase.co'
-  key: ''    // e.g. 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-};
+// ═══════════════════════════════════════════════
+//  CONFIG — paste your credentials here
+// ═══════════════════════════════════════════════
+const SB_URL = 'https://mdcorbmrsbuwblklxwzk.supabase.co';   // 'https://xxxx.supabase.co'
+const SB_KEY = 'sb_publishable_7u5f8gpanzGerk0r4dG2KQ_KfgN8_Os';   // 'eyJhbGci...'
 
-// ─── Runtime credentials (CONFIG > localStorage) ───
-let SB_URL = CONFIG.url || localStorage.getItem('sb_url') || '';
-let SB_KEY = CONFIG.key || localStorage.getItem('sb_key') || '';
+// ─── globals ───
+let sb=null, user=null, expenses=[], categories=[], catF='', dc=null, bc2=null;
 
-// ─── Default categories ───
-const DEFAULT_CATS = [
+const DEF_CATS=[
   {name:'Food & Dining',color:'#f59e0b'},{name:'Housing & Rent',color:'#6c63ff'},
   {name:'Transport',color:'#3b82f6'},{name:'Shopping',color:'#ec4899'},
   {name:'Health',color:'#22c55e'},{name:'Entertainment',color:'#f97316'},
-  {name:'Education',color:'#06b6d4'},{name:'Utilities',color:'#8b5cf6'},
-  {name:'Others',color:'#94a3b8'}
+  {name:'Education',color:'#06b6d4'},{name:'Utilities',color:'#8b5cf6'},{name:'Others',color:'#94a3b8'}
 ];
 
-let categories = JSON.parse(localStorage.getItem('exp_cats')||'null') || JSON.parse(JSON.stringify(DEFAULT_CATS));
-let expenses    = JSON.parse(localStorage.getItem('exp_data')||'null');
+// ═══ INIT ═══
+window.addEventListener('load', async()=>{
+  if(SB_URL && SB_KEY){
+    sb = supabase.createClient(SB_URL, SB_KEY);
+    const {data:{session}} = await sb.auth.getSession();
+    if(session){ user=session.user; loadCache(); boot(); }
+    else { showAuth(); }
+  } else {
+    user={id:'local',email:'local',user_metadata:{name:'You'}};
+    loadCache(); boot();
+  }
+});
 
-// Only create sample data in local-only mode with no data
-if(!expenses){ expenses = []; saveLocal(); }
-
-function saveLocal(){
-  localStorage.setItem('exp_data', JSON.stringify(expenses));
-  localStorage.setItem('exp_cats', JSON.stringify(categories));
+// ═══ AUTH ═══
+let mode='login';
+function setMode(m){
+  mode=m;
+  document.getElementById('atL').classList.toggle('on',m==='login');
+  document.getElementById('atS').classList.toggle('on',m==='signup');
+  document.getElementById('nameF').style.display=m==='signup'?'block':'none';
+  document.getElementById('aBtn').textContent=m==='login'?'Sign In':'Create Account';
+  document.getElementById('aErr').textContent='';
 }
-
-// ═══════════ SUPABASE API ═══════════
-async function sbFetch(path, opts={}){
-  const res = await fetch(SB_URL+'/rest/v1/'+path, {
-    headers:{
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer '+SB_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': opts.prefer||'return=representation',
-      ...(opts.headers||{})
-    },
-    method: opts.method||'GET',
-    body: opts.body||undefined
-  });
-  if(!res.ok){ const e=await res.text(); throw new Error(e); }
-  const t=await res.text(); return t?JSON.parse(t):[];
+function showAuth(){
+  document.getElementById('authWrap').style.display='flex';
+  document.getElementById('app').style.display='none';
 }
-
-async function loadFromCloud(){
-  setSyncing(true);
+async function doAuth(){
+  const email=document.getElementById('aEmail').value.trim();
+  const pass=document.getElementById('aPass').value;
+  const name=document.getElementById('aName').value.trim();
+  const btn=document.getElementById('aBtn'), err=document.getElementById('aErr');
+  if(!email||!pass){err.textContent='Enter email and password';return;}
+  btn.disabled=true; btn.textContent='Please wait…'; err.textContent='';
   try{
-    const [exps, cats] = await Promise.all([
-      sbFetch('expenses?select=*&order=date.desc,id.desc'),
-      sbFetch('categories?select=*')
-    ]);
-    expenses = exps;
-    if(cats.length){ categories = cats; }
-    else { await pushCatsToCloud(); } // first time: push local cats up
-    saveLocal();
-    populateCatDropdowns();
-    render();
-    setSyncing(false, true);
-    toast('Synced from cloud ✅','ok');
-  }catch(e){
-    setSyncing(false, false);
-    toast('Cloud sync error: '+e.message,'err');
-    console.error('Supabase error:', e);
+    let r;
+    if(mode==='login'){
+      r=await sb.auth.signInWithPassword({email,password:pass});
+    } else {
+      if(!name){err.textContent='Enter your name';btn.disabled=false;btn.textContent='Create Account';return;}
+      r=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
+    }
+    if(r.error) throw r.error;
+    user=r.data.user||r.data.session?.user;
+    if(!user){err.textContent='Check your email to verify your account, then sign in.';btn.disabled=false;btn.textContent=mode==='login'?'Sign In':'Create Account';return;}
+    loadCache(); boot(); syncCloud();
+  } catch(e){
+    err.textContent=e.message;
+    btn.disabled=false; btn.textContent=mode==='login'?'Sign In':'Create Account';
   }
 }
-
-async function pushCatsToCloud(){
-  try{
-    await sbFetch('categories', {method:'DELETE', prefer:'', headers:{'Prefer':''}});
-    await sbFetch('categories', {method:'POST', body: JSON.stringify(categories.map(({name,color})=>({name,color})))});
-  }catch(e){ console.error('Cat push error',e); }
+async function doSignOut(){
+  if(!confirm('Sign out?'))return;
+  if(sb) await sb.auth.signOut();
+  user=null; expenses=[]; categories=[];
+  ['aEmail','aPass','aName'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('aErr').textContent='';
+  setMode('login');
+  showAuth();
 }
 
-// ═══════════ SETUP SCREEN ═══════════
-async function connectAndStart(){
-  const url = document.getElementById('setupUrl').value.trim();
-  const key = document.getElementById('setupKey').value.trim();
-  const warn = document.getElementById('setupWarn');
-  if(!url||!key){ warn.textContent='Please enter both URL and key.'; return; }
-  warn.textContent='Testing connection…';
-  try{
-    const r = await fetch(url+'/rest/v1/expenses?select=id&limit=1',{headers:{'apikey':key,'Authorization':'Bearer '+key}});
-    if(r.status===404||r.status===401||r.status===403){ warn.textContent='Connection failed. Check your URL and key, and make sure you ran the SQL.'; return; }
-  }catch(e){ warn.textContent='Cannot reach Supabase. Check the URL.'; return; }
-  SB_URL=url; SB_KEY=key;
-  localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
-  warn.textContent='';
-  startApp();
+// ═══ CACHE ═══
+const uid=()=>user?.id||'local';
+function loadCache(){
+  expenses=JSON.parse(localStorage.getItem('e_'+uid())||'[]');
+  categories=JSON.parse(localStorage.getItem('c_'+uid())||'null')||[...DEF_CATS.map(c=>({...c}))];
+}
+function saveCache(){
+  localStorage.setItem('e_'+uid(),JSON.stringify(expenses));
+  localStorage.setItem('c_'+uid(),JSON.stringify(categories));
 }
 
-function skipSetup(){
-  SB_URL=''; SB_KEY='';
-  startApp();
-}
-
-function startApp(){
-  document.getElementById('setupScreen').style.display='none';
-  document.getElementById('mainApp').style.display='block';
+// ═══ BOOT ═══
+function boot(){
+  document.getElementById('authWrap').style.display='none';
+  document.getElementById('app').style.display='block';
   document.getElementById('eDate').value=new Date().toISOString().split('T')[0];
-  document.getElementById('hDate').textContent=new Date().toLocaleString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-  populateCatDropdowns();
-  updateSyncUI();
-  if(SB_URL && SB_KEY){ loadFromCloud(); }
-  else { render(); }
+  const name=user?.user_metadata?.name||user?.email?.split('@')[0]||'You';
+  document.getElementById('pName').textContent=name;
+  document.getElementById('pEmail').textContent=user?.email||'Local mode';
+  document.getElementById('pav').textContent=name[0].toUpperCase();
+  populateDDs(); buildChips(); renderDash(); renderExp(); renderCats();
 }
 
-// ═══════════ SYNC UI ═══════════
-function setSyncing(on, ok){
-  const b=document.getElementById('syncBadge');
-  if(on){ b.className='sync-badge badge-syncing'; b.textContent='↻ Syncing…'; return; }
-  if(ok){ b.className='sync-badge badge-cloud'; b.textContent='☁ Cloud Synced'; }
-  else   { b.className='sync-badge badge-local'; b.textContent='⚠ Sync Error'; }
+// ═══ CLOUD ═══
+async function syncCloud(){
+  if(!sb||!user||user.id==='local')return;
+  setPill('sy');
+  try{
+    const [er,cr]=await Promise.all([
+      sb.from('expenses').select('*').eq('user_id',user.id).order('date',{ascending:false}),
+      sb.from('categories').select('*').eq('user_id',user.id)
+    ]);
+    if(er.error||cr.error) throw er.error||cr.error;
+    expenses=er.data||[];
+    if(cr.data?.length) categories=cr.data;
+    else await pushCats();
+    saveCache(); populateDDs(); buildChips();
+    renderDash(); renderExp(); renderCats();
+    setPill('ok'); toast('Synced ✅','ok');
+  }catch(e){ setPill('er'); toast('Sync error','err'); console.error(e); }
+}
+async function pushCats(){
+  if(!sb||!user||user.id==='local')return;
+  await sb.from('categories').delete().eq('user_id',user.id);
+  await sb.from('categories').insert(categories.map(({name,color})=>({name,color,user_id:user.id})));
 }
 
-function updateSyncUI(){
-  const b=document.getElementById('syncBadge');
-  const sc=document.getElementById('settingsConnected');
-  const sl=document.getElementById('settingsLocal');
-  const dr=document.getElementById('disconnectRow');
-  if(SB_URL&&SB_KEY){
-    b.className='sync-badge badge-cloud'; b.textContent='☁ Cloud Synced';
-    sc.style.display='flex'; sl.style.display='none'; dr.style.display='block';
-    const su=document.getElementById('stUrl'); if(su) su.value=SB_URL;
-    const sk=document.getElementById('stKey'); if(sk) sk.value=SB_KEY;
-  }else{
-    b.className='sync-badge badge-local'; b.textContent='💾 Local Only';
-    sc.style.display='none'; sl.style.display='block'; dr.style.display='none';
-  }
+// ═══ SYNC PILL ═══
+function setPill(s){
+  const cls={ok:'sc-ok',sy:'sc-sy',er:'sc-er',lo:'sc-lo'};
+  const txt={ok:'☁ Synced',sy:'↻ Syncing',er:'⚠ Error',lo:'💾 Local'};
+  ['pill','pill2'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    el.className='spill '+(cls[s]||'sc-lo');
+    el.textContent=txt[s]||'Local';
+  });
 }
 
-function connectFromSettings(){
-  const url=document.getElementById('stUrl').value.trim();
-  const key=document.getElementById('stKey').value.trim();
-  if(!url||!key){toast('Enter URL and key','err');return;}
-  SB_URL=url; SB_KEY=key;
-  localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
-  updateSyncUI(); loadFromCloud();
+// ═══ NAV ═══
+let curS=0;
+function nav(i){
+  document.querySelectorAll('.screen').forEach((s,j)=>{s.classList.toggle('active',j===i);s.scrollTop=0;});
+  document.querySelectorAll('.ni').forEach((n,j)=>n.classList.toggle('on',j===i));
+  curS=i;
+  if(i===1) renderExp();
+  if(i===2) renderCats();
 }
 
-function disconnect(){
-  if(!confirm('Disconnect cloud? Data stays locally but won\'t sync.'))return;
-  SB_URL=''; SB_KEY='';
-  localStorage.removeItem('sb_url'); localStorage.removeItem('sb_key');
-  updateSyncUI(); toast('Disconnected','ok');
-}
-
-// ═══════════ TABS ═══════════
-function switchTab(t){
-  const tabs=['dashboard','expenses','categories','settings'];
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',tabs[i]===t));
-  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  if(t==='expenses') renderTable(getFiltered());
-  if(t==='categories') renderCatList();
-  if(t==='settings') updateSyncUI();
-}
-
-// ═══════════ HELPERS ═══════════
-function catColor(n){ return (categories.find(c=>c.name===n)||{color:'#94a3b8'}).color; }
-function fmt(d){ return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
-function inr(n){ return '₹'+Number(n).toLocaleString('en-IN'); }
+// ═══ HELPERS ═══
+function cc(n){return(categories.find(c=>c.name===n)||{color:'#94a3b8'}).color;}
+function fd(d){return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
+function inr(n){return '₹'+Number(n).toLocaleString('en-IN');}
 function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast '+type+' show';
-  setTimeout(()=>t.className='toast',3500);
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3000);
 }
 
-// ═══════════ DROPDOWNS ═══════════
-function populateCatDropdowns(){
-  ['eCat','editCat','fCatFilter'].forEach(id=>{
-    const el=document.getElementById(id); if(!el)return;
-    const prev=el.value, isFilter=id==='fCatFilter';
-    el.innerHTML=(isFilter?'<option value="">All Categories</option>':'')+categories.map(c=>`<option>${c.name}</option>`).join('');
-    if(categories.find(c=>c.name===prev)) el.value=prev;
+// ═══ DROPDOWNS ═══
+function populateDDs(){
+  ['eCat','edCat'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const pv=el.value;
+    el.innerHTML=categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
+    if(categories.find(c=>c.name===pv)) el.value=pv;
   });
 }
 
-// ═══════════ FILTERS ═══════════
-function getFiltered(){
+// ═══ FILTER ═══
+function getF(){
   const from=document.getElementById('fFrom')?.value||'';
   const to=document.getElementById('fTo')?.value||'';
-  const cat=document.getElementById('fCatFilter')?.value||'';
-  const sort=document.getElementById('fSort')?.value||'date-desc';
-  let res=expenses.filter(e=>{
+  return expenses.filter(e=>{
     if(from&&e.date<from)return false;
     if(to&&e.date>to)return false;
-    if(cat&&e.cat!==cat)return false;
+    if(catF&&e.cat!==catF)return false;
     return true;
   });
-  if(sort==='date-desc')res.sort((a,b)=>b.date.localeCompare(a.date)||(b.id-a.id));
-  else if(sort==='date-asc')res.sort((a,b)=>a.date.localeCompare(b.date));
-  else if(sort==='amt-desc')res.sort((a,b)=>b.amt-a.amt);
-  else res.sort((a,b)=>a.amt-b.amt);
-  return res;
 }
-
-function clearFilters(){
-  ['fFrom','fTo'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  const fc=document.getElementById('fCatFilter'); if(fc)fc.value='';
-  const fs=document.getElementById('fSort'); if(fs)fs.value='date-desc';
-  render();
+function buildChips(){
+  const el=document.getElementById('chips');
+  el.innerHTML=`<div class="chip ${catF===''?'on':''}" onclick="setCF('')">All</div>`
+    +categories.map(c=>`<div class="chip ${catF===c.name?'on':''}" onclick="setCF('${c.name.replace(/'/g,"\\'")}')"`
+      +(catF===c.name?` style="background:${c.color};border-color:${c.color}"`:'')+`>${c.name}</div>`).join('');
 }
+function setCF(c){catF=c;buildChips();renderExp();renderDash();}
+function clrFilters(){document.getElementById('fFrom').value='';document.getElementById('fTo').value='';catF='';buildChips();renderExp();renderDash();}
 
-// ═══════════ CHARTS ═══════════
-let donutChart, barChart;
-
-function renderDonut(filtered){
-  const bc={};
-  filtered.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+e.amt;});
-  const labels=Object.keys(bc), data=labels.map(l=>bc[l]), colors=labels.map(l=>catColor(l));
-  if(donutChart)donutChart.destroy();
-  const leg=document.getElementById('donutLegend');
-  if(!labels.length){leg.innerHTML='<span style="color:var(--muted);font-size:.78rem">No data yet</span>';return;}
-  donutChart=new Chart(document.getElementById('donutChart').getContext('2d'),{
-    type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0,hoverOffset:8}]},
-    options:{cutout:'68%',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+inr(c.parsed)}}}}
-  });
-  leg.innerHTML=labels.map((l,i)=>`<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div>${l}</div>`).join('');
-}
-
-function renderBar(){
-  const months=[], totals=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
-    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    months.push(d.toLocaleString('default',{month:'short'}));
-    totals.push(expenses.filter(e=>e.date&&e.date.startsWith(key)).reduce((s,e)=>s+Number(e.amt),0));
-  }
-  if(barChart)barChart.destroy();
-  barChart=new Chart(document.getElementById('barChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:months,datasets:[{data:totals,backgroundColor:'#6c63ff88',borderColor:'#6c63ff',borderWidth:2,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#2d314833'},ticks:{color:'#94a3b8'}},
-        y:{grid:{color:'#2d314833'},ticks:{color:'#94a3b8',callback:v=>inr(v)}}}}
-  });
-}
-
-// ═══════════ RENDER ═══════════
-function renderTable(filtered){
-  const tbody=document.getElementById('expTable');
-  const empty=document.getElementById('emptyMsg');
-  const info=document.getElementById('resultInfo');
-  if(info) info.textContent=`${filtered.length} of ${expenses.length} records`;
-  if(!filtered.length){if(tbody)tbody.innerHTML='';if(empty)empty.style.display='block';return;}
-  if(empty)empty.style.display='none';
-  if(!tbody)return;
-  tbody.innerHTML=filtered.map(e=>`<tr>
-    <td style="color:var(--muted);white-space:nowrap">${fmt(e.date)}</td>
-    <td style="font-weight:600">${e.name}</td>
-    <td><span class="badge" style="background:${catColor(e.cat)}22;color:${catColor(e.cat)}">${e.cat}</span></td>
-    <td style="font-weight:800">${inr(e.amt)}</td>
-    <td style="color:var(--muted);font-size:.76rem;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.note||''}">${e.note||'—'}</td>
-    <td><button class="act-btn act-edit" onclick="openEdit(${e.id})">✏ Edit</button><button class="act-btn act-del" onclick="delExp(${e.id})">✕</button></td>
-  </tr>`).join('');
-}
-
-function render(){
-  const filtered=getFiltered();
-  const total=filtered.reduce((s,e)=>s+Number(e.amt),0);
-  document.getElementById('cTotal').textContent=inr(total);
-  document.getElementById('cCount').textContent=filtered.length;
-  document.getElementById('cAvg').textContent=filtered.length?inr(Math.round(total/filtered.length)):inr(0);
-  const bc={};filtered.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+e.amt;});
+// ═══ DASHBOARD ═══
+function renderDash(){
+  const f=getF();
+  const tot=f.reduce((s,e)=>s+Number(e.amt),0);
+  document.getElementById('cT').textContent=inr(tot);
+  document.getElementById('cN').textContent=f.length;
+  document.getElementById('cA').textContent=f.length?inr(Math.round(tot/f.length)):inr(0);
+  const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
   const top=Object.entries(bc).sort((a,b)=>b[1]-a[1])[0];
   document.getElementById('cTop').textContent=top?top[0]:'—';
-  document.getElementById('cTopAmt').textContent=top?inr(top[1]):'';
-  renderDonut(filtered); renderBar(); renderTable(filtered);
+  document.getElementById('cTopA').textContent=top?inr(top[1]):'';
+  renderDonut(f); renderBar2();
+}
+function renderDonut(f){
+  const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
+  const labels=Object.keys(bc),data=labels.map(l=>bc[l]),clrs=labels.map(l=>cc(l));
+  if(dc)dc.destroy();
+  const leg=document.getElementById('leg');
+  if(!labels.length){leg.innerHTML='<span style="font-size:.75rem;color:var(--muted)">No data yet</span>';return;}
+  dc=new Chart(document.getElementById('donut').getContext('2d'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:clrs,borderWidth:0,hoverOffset:6}]},
+    options:{cutout:'65%',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+inr(c.parsed)}}}}
+  });
+  leg.innerHTML=labels.map((l,i)=>`<div class="li"><div class="ld" style="background:${clrs[i]}"></div>${l}</div>`).join('');
+}
+function renderBar2(){
+  const ms=[],ts=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    ms.push(d.toLocaleString('default',{month:'short'}));
+    ts.push(expenses.filter(e=>e.date?.startsWith(k)).reduce((s,e)=>s+Number(e.amt),0));
+  }
+  if(bc2)bc2.destroy();
+  bc2=new Chart(document.getElementById('bar').getContext('2d'),{
+    type:'bar',
+    data:{labels:ms,datasets:[{data:ts,backgroundColor:'#6c63ff88',borderColor:'#6c63ff',borderWidth:2,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#2d314820'},ticks:{color:'#94a3b8',font:{size:10}}},
+        y:{grid:{color:'#2d314820'},ticks:{color:'#94a3b8',font:{size:10},callback:v=>'₹'+v.toLocaleString('en-IN')}}}}
+  });
 }
 
-// ═══════════ ADD / EDIT / DELETE ═══════════
-async function addExpense(){
+// ═══ EXPENSES LIST ═══
+function renderExp(){
+  const f=getF().slice().sort((a,b)=>b.date?.localeCompare(a.date)||0);
+  const el=document.getElementById('expList');
+  const info=document.getElementById('eInfo');
+  if(info)info.textContent=`${f.length} of ${expenses.length} records`;
+  if(!f.length){el.innerHTML=`<div class="empty"><div class="ico">🧾</div><p>No expenses found</p><p>Adjust filters or add one from Dashboard</p></div>`;return;}
+  el.innerHTML=f.map(e=>`<div class="ei">
+    <div class="edot" style="background:${cc(e.cat)}"></div>
+    <div class="ebody">
+      <div class="en">${e.name}</div>
+      <div class="em">${fd(e.date)} · <span class="bdg" style="background:${cc(e.cat)}22;color:${cc(e.cat)}">${e.cat}</span>${e.note?` · ${e.note}`:''}</div>
+    </div>
+    <div>
+      <div class="eamt">${inr(e.amt)}</div>
+      <div class="eact">
+        <button class="ed" onclick="openEdit(${e.id})">✏</button>
+        <button class="ex" onclick="delE(${e.id})">✕</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+// ═══ ADD EXPENSE ═══
+function openAdd(){document.getElementById('addSh').classList.add('show');document.getElementById('eName').focus();}
+function closeAdd(){document.getElementById('addSh').classList.remove('show');}
+async function addExp(){
   const name=document.getElementById('eName').value.trim();
   const amt=parseFloat(document.getElementById('eAmt').value);
   const cat=document.getElementById('eCat').value;
   const date=document.getElementById('eDate').value;
   const note=document.getElementById('eNote').value.trim();
-  if(!name||!amt||isNaN(amt)||!date){toast('Fill all required fields','err');return;}
-
+  if(!name||!amt||isNaN(amt)||!date){toast('Fill required fields','err');return;}
   const btn=document.getElementById('addBtn');
-  btn.disabled=true; btn.textContent='Saving…';
-
-  if(SB_URL){
-    try{
-      const res=await sbFetch('expenses',{method:'POST',body:JSON.stringify([{name,amt,cat,date,note}])});
-      if(res[0]){ expenses.unshift(res[0]); saveLocal(); }
-      toast('Expense saved ✅','ok');
-    }catch(e){ toast('Save failed: '+e.message,'err'); }
+  btn.disabled=true;btn.textContent='Saving…';
+  if(sb&&user&&user.id!=='local'){
+    const {data,error}=await sb.from('expenses').insert([{name,amt,cat,date,note,user_id:user.id}]).select();
+    if(error){toast('Save failed: '+error.message,'err');btn.disabled=false;btn.textContent='💾 Save Expense';return;}
+    expenses.unshift(data[0]);
   } else {
     expenses.unshift({id:Date.now(),name,amt,cat,date,note});
-    saveLocal(); toast('Expense saved locally','ok');
   }
-
-  document.getElementById('eName').value='';
-  document.getElementById('eAmt').value='';
-  document.getElementById('eNote').value='';
-  btn.disabled=false; btn.textContent='+ Save Expense';
-  render();
+  saveCache();
+  ['eName','eAmt','eNote'].forEach(id=>document.getElementById(id).value='');
+  btn.disabled=false;btn.textContent='💾 Save Expense';
+  closeAdd();toast('Saved ✅','ok');renderDash();renderExp();
 }
 
+// ═══ EDIT ═══
 function openEdit(id){
-  const e=expenses.find(x=>x.id==id); if(!e)return;
-  document.getElementById('editId').value=id;
-  document.getElementById('editName').value=e.name;
-  document.getElementById('editAmt').value=e.amt;
-  document.getElementById('editDate').value=e.date;
-  document.getElementById('editNote').value=e.note||'';
-  populateCatDropdowns();
-  document.getElementById('editCat').value=e.cat;
-  document.getElementById('editModal').style.display='flex';
+  const e=expenses.find(x=>x.id==id);if(!e)return;
+  document.getElementById('eId').value=id;
+  document.getElementById('edName').value=e.name;
+  document.getElementById('edAmt').value=e.amt;
+  document.getElementById('edDate').value=e.date;
+  document.getElementById('edNote').value=e.note||'';
+  populateDDs();document.getElementById('edCat').value=e.cat;
+  document.getElementById('editSh').classList.add('show');
 }
-
+function closeEdit(){document.getElementById('editSh').classList.remove('show');}
 async function saveEdit(){
-  const id=document.getElementById('editId').value;
-  const idx=expenses.findIndex(x=>x.id==id); if(idx<0)return;
-  const updated={...expenses[idx],
-    name:document.getElementById('editName').value.trim(),
-    amt:parseFloat(document.getElementById('editAmt').value),
-    cat:document.getElementById('editCat').value,
-    date:document.getElementById('editDate').value,
-    note:document.getElementById('editNote').value.trim()
-  };
-  if(SB_URL){
-    try{
-      await sbFetch('expenses?id=eq.'+id,{method:'PATCH',body:JSON.stringify({name:updated.name,amt:updated.amt,cat:updated.cat,date:updated.date,note:updated.note})});
-      toast('Updated ✅','ok');
-    }catch(e){ toast('Update failed: '+e.message,'err'); }
-  } else { toast('Updated locally','ok'); }
-  expenses[idx]=updated; saveLocal(); closeEdit(); render(); renderTable(getFiltered());
-}
-
-function closeEdit(){ document.getElementById('editModal').style.display='none'; }
-
-async function delExp(id){
-  if(!confirm('Delete this expense?'))return;
-  if(SB_URL){
-    try{ await sbFetch('expenses?id=eq.'+id,{method:'DELETE',prefer:''}); }
-    catch(e){ toast('Delete failed: '+e.message,'err'); return; }
+  const id=document.getElementById('eId').value;
+  const idx=expenses.findIndex(x=>x.id==id);if(idx<0)return;
+  const upd={...expenses[idx],name:document.getElementById('edName').value.trim(),amt:parseFloat(document.getElementById('edAmt').value),cat:document.getElementById('edCat').value,date:document.getElementById('edDate').value,note:document.getElementById('edNote').value.trim()};
+  if(sb&&user&&user.id!=='local'){
+    const {error}=await sb.from('expenses').update({name:upd.name,amt:upd.amt,cat:upd.cat,date:upd.date,note:upd.note}).eq('id',id);
+    if(error){toast('Update failed','err');return;}
   }
-  expenses=expenses.filter(e=>e.id!=id); saveLocal();
-  toast('Deleted','ok'); render(); renderTable(getFiltered());
+  expenses[idx]=upd;saveCache();closeEdit();toast('Updated ✅','ok');renderDash();renderExp();
+}
+async function delE(id){
+  if(!confirm('Delete this expense?'))return;
+  if(sb&&user&&user.id!=='local'){
+    const {error}=await sb.from('expenses').delete().eq('id',id);
+    if(error){toast('Delete failed','err');return;}
+  }
+  expenses=expenses.filter(e=>e.id!=id);saveCache();toast('Deleted','ok');renderDash();renderExp();
 }
 
-// ═══════════ CATEGORIES ═══════════
-function renderCatList(){
-  document.getElementById('catList').innerHTML=categories.map((c,i)=>`
-    <div class="cat-item">
-      <div style="width:13px;height:13px;border-radius:50%;background:${c.color};flex-shrink:0"></div>
-      <input class="cat-name-input" value="${c.name}" onblur="renameCat(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
-      <input type="color" value="${c.color}" style="width:30px;height:28px;padding:2px;border:none;background:none;cursor:pointer;border-radius:5px" onchange="changeCatColor(${i},this.value)">
-      <button class="act-btn act-del" onclick="delCategory(${i})">✕</button>
-    </div>`).join('');
+// ═══ CATEGORIES ═══
+function renderCats(){
+  const el=document.getElementById('catEl');
+  if(!categories.length){el.innerHTML=`<div class="empty"><div class="ico">🏷</div><p>No categories yet</p></div>`;return;}
+  el.innerHTML=categories.map((c,i)=>`<div class="ci">
+    <div class="csw" style="background:${c.color}"></div>
+    <input class="cni" value="${c.name}" onblur="renCat(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+    <input type="color" value="${c.color}" style="width:28px;height:26px;padding:2px;border:none;background:none;cursor:pointer;border-radius:5px;flex-shrink:0" onchange="chgCatClr(${i},this.value)">
+    <button class="btn bsm br" style="padding:5px 9px" onclick="delCat(${i})">✕</button>
+  </div>`).join('');
 }
-
-function addCategory(){
-  const name=document.getElementById('newCatName').value.trim();
-  const color=document.getElementById('newCatColor').value;
-  const warn=document.getElementById('catWarn');
-  if(!name){warn.textContent='Enter a name';return;}
-  if(categories.find(c=>c.name.toLowerCase()===name.toLowerCase())){warn.textContent='Already exists!';return;}
-  warn.textContent='';
-  categories.push({name,color}); saveLocal();
-  if(SB_URL) pushCatsToCloud();
-  document.getElementById('newCatName').value='';
-  populateCatDropdowns(); renderCatList(); toast('Category added','ok');
+function openAddCat(){document.getElementById('catErr').textContent='';document.getElementById('catSh').classList.add('show');}
+function closeAddCat(){document.getElementById('catSh').classList.remove('show');}
+async function addCat(){
+  const name=document.getElementById('ncName').value.trim();
+  const color=document.getElementById('ncCol').value;
+  const err=document.getElementById('catErr');
+  if(!name){err.textContent='Enter a name';return;}
+  if(categories.find(c=>c.name.toLowerCase()===name.toLowerCase())){err.textContent='Already exists!';return;}
+  categories.push({name,color});saveCache();
+  if(sb&&user&&user.id!=='local') await pushCats();
+  document.getElementById('ncName').value='';
+  populateDDs();buildChips();renderCats();closeAddCat();toast('Category added','ok');
 }
-
-function renameCat(i,newName){
-  newName=newName.trim();
-  if(!newName||categories.find((c,j)=>j!==i&&c.name.toLowerCase()===newName.toLowerCase()))return;
+async function renCat(i,n){
+  n=n.trim();
+  if(!n||categories.find((c,j)=>j!==i&&c.name.toLowerCase()===n.toLowerCase()))return;
   const old=categories[i].name;
-  expenses=expenses.map(e=>e.cat===old?{...e,cat:newName}:e);
-  categories[i].name=newName; saveLocal();
-  if(SB_URL){ pushCatsToCloud(); expenses.forEach(e=>{if(e.cat===newName)sbFetch('expenses?id=eq.'+e.id,{method:'PATCH',body:JSON.stringify({cat:newName})}).catch(()=>{}); }); }
-  populateCatDropdowns(); toast('Renamed','ok'); render();
+  expenses=expenses.map(e=>e.cat===old?{...e,cat:n}:e);
+  categories[i].name=n;saveCache();
+  if(sb&&user&&user.id!=='local'){await pushCats();await sb.from('expenses').update({cat:n}).eq('cat',old).eq('user_id',user.id);}
+  populateDDs();buildChips();toast('Renamed','ok');renderDash();
 }
-
-function delCategory(i){
-  if(categories.length<=1){toast('Keep at least one category','err');return;}
+async function delCat(i){
+  if(categories.length<=1){toast('Keep at least one','err');return;}
   const cat=categories[i];
   const used=expenses.filter(e=>e.cat===cat.name).length;
-  const fallback=categories.find((_,j)=>j!==i).name;
-  if(used>0&&!confirm(`"${cat.name}" used in ${used} expense(s). They'll move to "${fallback}". Continue?`))return;
-  expenses=expenses.map(e=>e.cat===cat.name?{...e,cat:fallback}:e);
-  categories.splice(i,1); saveLocal();
-  if(SB_URL){ pushCatsToCloud(); expenses.forEach(e=>sbFetch('expenses?id=eq.'+e.id,{method:'PATCH',body:JSON.stringify({cat:e.cat})}).catch(()=>{})); }
-  populateCatDropdowns(); renderCatList(); toast('Removed','ok'); render();
+  const fb=categories.find((_,j)=>j!==i).name;
+  if(used>0&&!confirm(`"${cat.name}" used in ${used} record(s). Move to "${fb}"?`))return;
+  expenses=expenses.map(e=>e.cat===cat.name?{...e,cat:fb}:e);
+  categories.splice(i,1);saveCache();
+  if(sb&&user&&user.id!=='local'){await pushCats();await sb.from('expenses').update({cat:fb}).eq('cat',cat.name).eq('user_id',user.id);}
+  populateDDs();buildChips();renderCats();toast('Removed','ok');renderDash();
+}
+async function chgCatClr(i,clr){
+  categories[i].color=clr;saveCache();
+  if(sb&&user&&user.id!=='local') await pushCats();
+  renderCats();renderDash();
 }
 
-function changeCatColor(i,color){
-  categories[i].color=color; saveLocal();
-  if(SB_URL) pushCatsToCloud();
-  renderCatList(); render();
-}
-
-// ═══════════ EXPORT ═══════════
-function exportCSV(){
-  const f=getFiltered(); if(!f.length){toast('No data to export','err');return;}
-  const rows=[['Date','Description','Category','Amount (INR)','Note'],...f.map(e=>[e.date,`"${e.name}"`,e.cat,e.amt,`"${e.note||''}"`])];
+// ═══ EXPORT ═══
+function expCSV(){
+  const f=getF();if(!f.length){toast('No data','err');return;}
+  const rows=[['Date','Description','Category','Amount','Note'],...f.map(e=>[e.date,`"${e.name}"`,e.cat,e.amt,`"${e.note||''}"`])];
   const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`expenses_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`expenses_${new Date().toISOString().split('T')[0]}.csv`;a.click();
   toast('CSV downloaded','ok');
 }
-
-function exportPDF(){
-  const f=getFiltered(); if(!f.length){toast('No data to export','err');return;}
-  const {jsPDF}=window.jspdf; const doc=new jsPDF();
-  doc.setFillColor(15,17,23); doc.rect(0,0,210,297,'F');
-  doc.setTextColor(200,205,220); doc.setFontSize(17); doc.setFont(undefined,'bold');
-  doc.text('Expense Report',14,18);
-  doc.setFontSize(9); doc.setFont(undefined,'normal'); doc.setTextColor(120,130,160);
-  doc.text(`Generated: ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}`,14,27);
-  const total=f.reduce((s,e)=>s+Number(e.amt),0);
-  doc.setFontSize(10); doc.setTextColor(200,205,220);
-  doc.text(`Total: INR ${total.toLocaleString('en-IN')}   |   Records: ${f.length}`,14,36);
-  doc.autoTable({startY:44,
-    head:[['Date','Description','Category','Amount (INR)','Note']],
-    body:f.map(e=>[fmt(e.date),e.name,e.cat,'INR '+Number(e.amt).toLocaleString('en-IN'),e.note||'']),
+function expPDF(){
+  const f=getF();if(!f.length){toast('No data','err');return;}
+  const {jsPDF}=window.jspdf;const doc=new jsPDF();
+  doc.setFillColor(15,17,23);doc.rect(0,0,210,297,'F');
+  doc.setTextColor(200,205,220);doc.setFontSize(16);doc.setFont(undefined,'bold');doc.text('Expense Report',14,18);
+  doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(120,130,160);
+  doc.text(`User: ${user?.email||'Local'} | ${new Date().toLocaleDateString('en-IN')}`,14,27);
+  const tot=f.reduce((s,e)=>s+Number(e.amt),0);
+  doc.setFontSize(10);doc.setTextColor(200,205,220);doc.text(`Total: ₹${tot.toLocaleString('en-IN')} | Records: ${f.length}`,14,35);
+  doc.autoTable({startY:42,head:[['Date','Description','Category','Amount','Note']],
+    body:f.map(e=>[fd(e.date),e.name,e.cat,'₹'+Number(e.amt).toLocaleString('en-IN'),e.note||'']),
     styles:{fillColor:[26,29,39],textColor:[200,205,220],fontSize:8.5,cellPadding:4},
     headStyles:{fillColor:[108,99,255],textColor:[255,255,255],fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[33,37,58]},
-    columnStyles:{3:{halign:'right'},4:{textColor:[130,140,165]}}
-  });
-  const fy=doc.lastAutoTable.finalY+10;
-  doc.setTextColor(160,155,255); doc.setFontSize(11); doc.setFont(undefined,'bold');
-  doc.text(`Grand Total: INR ${total.toLocaleString('en-IN')}`,14,fy);
+    alternateRowStyles:{fillColor:[33,37,58]},columnStyles:{3:{halign:'right'}}});
+  doc.setTextColor(160,155,255);doc.setFontSize(11);doc.setFont(undefined,'bold');
+  doc.text(`Grand Total: ₹${tot.toLocaleString('en-IN')}`,14,doc.lastAutoTable.finalY+10);
   doc.save(`expense_report_${new Date().toISOString().split('T')[0]}.pdf`);
   toast('PDF downloaded','ok');
 }
-
-function exportJSON(){
-  const data={expenses,categories,exported:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`expense_backup_${new Date().toISOString().split('T')[0]}.json`; a.click();
+function expJSON(){
+  const blob=new Blob([JSON.stringify({expenses,categories,user:user?.email,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
   toast('Backup downloaded','ok');
 }
-
-function importJSON(evt){
-  const file=evt.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=async e=>{
+async function impJSON(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=async e=>{
     try{
-      const data=JSON.parse(e.target.result);
-      if(!data.expenses||!data.categories){toast('Invalid backup file','err');return;}
-      if(!confirm(`Import ${data.expenses.length} expenses? This replaces current data.`))return;
-      expenses=data.expenses; categories=data.categories; saveLocal();
-      if(SB_URL){
-        toast('Uploading to cloud…','info');
-        try{
-          await sbFetch('expenses',{method:'DELETE',prefer:''});
-          if(expenses.length) await sbFetch('expenses',{method:'POST',body:JSON.stringify(expenses.map(({name,amt,cat,date,note})=>({name,amt,cat,date,note})))});
-          await pushCatsToCloud();
-          await loadFromCloud();
-        }catch(e){ toast('Cloud upload failed: '+e.message,'err'); }
+      const d=JSON.parse(e.target.result);
+      if(!d.expenses||!d.categories){toast('Invalid file','err');return;}
+      if(!confirm(`Import ${d.expenses.length} expenses?`))return;
+      expenses=d.expenses;categories=d.categories;saveCache();
+      if(sb&&user&&user.id!=='local'){
+        toast('Uploading…','info');
+        await sb.from('expenses').delete().eq('user_id',user.id);
+        if(expenses.length) await sb.from('expenses').insert(expenses.map(({name,amt,cat,date,note})=>({name,amt,cat,date,note,user_id:user.id})));
+        await pushCats();
       }
-      populateCatDropdowns(); render(); renderCatList();
+      populateDDs();buildChips();renderDash();renderExp();renderCats();
       toast(`Imported ${expenses.length} expenses ✅`,'ok');
-    }catch{ toast('Failed to read file','err'); }
+    }catch{toast('Failed to read file','err');}
   };
-  reader.readAsText(file); evt.target.value='';
+  r.readAsText(file);evt.target.value='';
+}
+async function resetAll(){
+  if(!confirm('Delete ALL data? Cannot be undone.'))return;
+  expenses=[];categories=[...DEF_CATS.map(c=>({...c}))];saveCache();
+  if(sb&&user&&user.id!=='local'){await sb.from('expenses').delete().eq('user_id',user.id);await pushCats();}
+  populateDDs();buildChips();renderDash();renderExp();renderCats();toast('Cleared','ok');
 }
 
-function resetAll(){
-  if(!confirm('Delete ALL expenses and reset categories? Cannot be undone.'))return;
-  expenses=[]; categories=JSON.parse(JSON.stringify(DEFAULT_CATS)); saveLocal();
-  if(SB_URL){
-    sbFetch('expenses',{method:'DELETE',prefer:''}).catch(()=>{});
-    pushCatsToCloud();
-  }
-  populateCatDropdowns(); render(); renderCatList(); toast('All data cleared','ok');
+// ═══ PWA SERVICE WORKER ═══
+if('serviceWorker' in navigator){
+  const sw=`
+    const CACHE='exp-v1';
+    const ASSETS=['/'];
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+    self.addEventListener('fetch',e=>e.respondWith(
+      caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+        if(res.status===200){const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));}
+        return res;
+      }).catch(()=>caches.match('/'))
+    ));
+  `;
+  const blob=new Blob([sw],{type:'text/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
 }
-
-// ═══════════ INIT ═══════════
-// If credentials already exist (from CONFIG or previous localStorage), skip setup screen
-if(SB_URL && SB_KEY){
-  startApp();
-} else {
-  // Check if user has visited before (local-only mode was chosen)
-  if(localStorage.getItem('app_visited')){
-    startApp();
-  } else {
-    document.getElementById('setupScreen').style.display='flex';
-  }
-}
-
-// Mark as visited when startApp is called
-const _origStart = startApp;
-window.startApp = function(){
-  localStorage.setItem('app_visited','1');
-  _origStart();
-};
-// Since startApp may be called from skipSetup before the override takes effect, handle inline:
-function skipSetup(){ localStorage.setItem('app_visited','1'); SB_URL=''; SB_KEY=''; startApp(); }
 </script>
 </body>
 </html>
