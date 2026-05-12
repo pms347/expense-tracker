@@ -7,53 +7,111 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f1117">
-<link rel="manifest" href="manifest.json">
 <title>Expense Tracker</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#0f1117;--card:#1a1d27;--card2:#21253a;
-  --accent:#6c63ff;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
-  --text:#e2e8f0;--muted:#94a3b8;--border:#2d3148;
-  --nav:60px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
-}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',Roboto,sans-serif}
-/* SCREENS */
-.screen{position:fixed;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav) + var(--sab) + 20px);display:none}
-.screen.active{display:block}
-.safe-top{height:var(--sat)}
-/* HEADER */
-.hdr{background:var(--bg);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;padding-top:calc(14px + var(--sat))}
-.hdr h1{font-size:1.08rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-/* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sab);z-index:30}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;color:var(--muted);font-size:.62rem;font-weight:600;gap:3px;background:none;border:none;cursor:pointer;transition:color .15s}
-.ni.on{color:var(--accent)}
-.ni-ico{font-size:1.25rem;line-height:1}
-/* AUTH */
-.auth-wrap{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;overflow-y:auto}
-.auth-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 22px;width:100%;max-width:400px}
-.auth-logo{text-align:center;margin-bottom:22px}
-.auth-logo .ico{font-size:2.4rem;margin-bottom:6px}
-.auth-logo h2{font-size:1.4rem;font-weight:900;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.auth-logo p{font-size:.78rem;color:var(--muted);margin-top:3px}
-.atabs{display:flex;background:var(--card2);border-radius:10px;padding:3px;margin-bottom:18px}
-.atab{flex:1;padding:9px;text-align:center;font-size:.86rem;font-weight:700;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s}
+:root{--bg:#0f1117;--card:#1a1d27;--card2:#21253a;--accent:#6c63ff;--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;--text:#e2e8f0;--muted:#94a3b8;--border:#2d3148;--nav:62px;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI',Roboto,sans-serif;touch-action:manipulation}
+
+/* ── AUTH ── */
+#authScreen{position:fixed;inset:0;background:var(--bg);z-index:999;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:20px;padding-top:calc(var(--sat)+20px)}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 22px;width:100%;max-width:420px;margin:auto}
+.auth-logo{text-align:center;margin-bottom:24px}
+.auth-logo .ico{font-size:2.8rem;display:block;margin-bottom:8px}
+.auth-logo h2{font-size:1.45rem;font-weight:900;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-logo p{font-size:.78rem;color:var(--muted);margin-top:4px}
+.atabs{display:flex;background:var(--card2);border-radius:11px;padding:4px;margin-bottom:20px;gap:4px}
+.atab{flex:1;padding:10px;text-align:center;font-size:.9rem;font-weight:700;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:none}
 .atab.on{background:var(--accent);color:#fff}
-/* FIELDS */
-.fi{margin-bottom:12px}
-.fi label{display:block;font-size:.69rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:5px}
-.fi input,.fi select,.fi textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 13px;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none;appearance:none}
+.fi{margin-bottom:13px}
+.fi label{display:block;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:5px}
+.fi input,.fi select,.fi textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:11px;padding:13px 14px;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none;appearance:none;display:block}
 .fi input:focus,.fi select:focus,.fi textarea:focus{border-color:var(--accent)}
-.fi select option{background:#1a1d27}
+.fi input::placeholder{color:var(--muted)}
 .fi textarea{resize:none}
 .fi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-/* BUTTONS */
-.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:12px;color:#fff;font-size:.98rem;font-weight:800;cursor:pointer;transition:opacity .2s;letter-spacing:.02em}
-.btn-primary:active{opacity:.82}
-.btn-primary:disabled{opacity:.55;cursor:not-allowed}
+.btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;transition:opacity .2s;letter-spacing:.02em;display:block;margin-top:4px}
+.btn-primary:active{opacity:.78}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.auth-err{color:var(--red);font-size:.8rem;margin-top:10px;text-align:center;min-height:18px;padding:4px}
+.auth-note{text-align:center;font-size:.76rem;color:var(--muted);margin-top:12px;line-height:1.5}
+.auth-note a{color:var(--accent);cursor:pointer;text-decoration:none}
+
+/* ── APP ── */
+#app{display:none;height:100%;overflow:hidden}
+.screen{position:fixed;inset:0;bottom:calc(var(--nav) + var(--sab));overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-top:var(--sat)}
+.screen.active{display:block}
+
+/* ── HEADER ── */
+.hdr{background:rgba(15,17,23,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.hdr h1{font-size:1.05rem;font-weight:800;background:linear-gradient(90deg,#6c63ff,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pill{font-size:.65rem;padding:4px 9px;border-radius:20px;border:1px solid;font-weight:700;white-space:nowrap}
+.p-ok{background:#22c55e15;color:#22c55e;border-color:#22c55e44}
+.p-lo{background:#f59e0b15;color:#f59e0b;border-color:#f59e0b44}
+.p-sy{background:#3b82f615;color:#3b82f6;border-color:#3b82f644}
+.p-er{background:#ef444415;color:#ef4444;border-color:#ef444444}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav) + var(--sab));background:var(--card);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:2px;z-index:20}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 4px 6px;color:var(--muted);font-size:.6rem;font-weight:600;gap:2px;background:none;border:none;cursor:pointer;transition:color .15s}
+.ni.on{color:var(--accent)}
+.ni-i{font-size:1.3rem;line-height:1}
+
+/* ── STAT GRID ── */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:-18px;right:-18px;width:55px;height:55px;border-radius:50%;opacity:.12}
+.sc.c1::before{background:#6c63ff}.sc.c2::before{background:#f59e0b}.sc.c3::before{background:#22c55e}.sc.c4::before{background:#3b82f6}
+.sc label{font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px}
+.sc .v{font-size:1.3rem;font-weight:800;line-height:1.2}
+.sc .s{font-size:.63rem;color:var(--muted);margin-top:2px}
+
+/* ── PANEL ── */
+.pnl{background:var(--card);border:1px solid var(--border);border-radius:13px;margin:0 12px 12px;overflow:hidden}
+.pnl-hd{font-size:.86rem;font-weight:700;padding:13px 13px 6px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.pnl-body{padding:4px 13px 13px}
+
+/* ── CHART ── */
+.cwrap{height:175px;position:relative}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── EXPENSE ITEMS ── */
+.ei{display:flex;align-items:flex-start;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
+.ei:last-child{border-bottom:none}
+.edot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ebody{flex:1;min-width:0}
+.en{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.em{font-size:.7rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eamt{font-weight:800;font-size:.92rem;white-space:nowrap;text-align:right;margin-bottom:4px}
+.eact{display:flex;gap:5px;justify-content:flex-end}
+.eact button{border-radius:7px;border:1px solid;padding:4px 9px;font-size:.72rem;font-weight:700;cursor:pointer;background:none;transition:background .15s}
+.eact .ed{color:#3b82f6;border-color:#3b82f633}.eact .ed:active{background:#3b82f622}
+.eact .ex{color:#ef4444;border-color:#ef444433}.eact .ex:active{background:#ef444422}
+
+/* ── CHIPS ── */
+.chips{display:flex;gap:7px;overflow-x:auto;padding:10px 12px 6px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:.75rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .18s}
+.chip.on{color:#fff}
+
+/* ── DATE FILTER ROW ── */
+.drow{display:flex;gap:7px;padding:0 12px 8px;align-items:center}
+.drow input{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:9px;padding:8px 10px;color:var(--text);font-size:.78rem;outline:none;-webkit-appearance:none;min-width:0}
+.drow input:focus{border-color:var(--accent)}
+.drow span{color:var(--muted);font-size:.75rem;flex-shrink:0}
+
+/* ── CAT ITEM ── */
+.ci{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
+.ci:last-child{border-bottom:none}
+.csw{width:13px;height:13px;border-radius:50%;flex-shrink:0}
+.cni{flex:1;background:transparent;border:none;color:var(--text);font-size:.9rem;outline:none;font-family:inherit;padding:2px 0}
+.cni:focus{border-bottom:1px solid var(--accent)}
+
+/* ── BTN ── */
 .btn{padding:9px 14px;border-radius:9px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap}
-.btn:active{transform:scale(.95)}
+.btn:active{transform:scale(.93)}
 .bsm{padding:7px 11px;font-size:.75rem}
 .bg{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
 .br{background:#ef444422;color:#ef4444;border:1px solid #ef444444}
@@ -61,130 +119,86 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .ba{background:var(--accent);color:#fff}
 .by{background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44}
 .bb{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644}
-.err{color:var(--red);font-size:.78rem;margin-top:8px;text-align:center;min-height:16px}
-/* STAT GRID */
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 12px 0}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:13px;position:relative;overflow:hidden}
-.sc::before{content:'';position:absolute;top:-18px;right:-18px;width:55px;height:55px;border-radius:50%;opacity:.13}
-.sc.c1::before{background:#6c63ff}.sc.c2::before{background:#f59e0b}.sc.c3::before{background:#22c55e}.sc.c4::before{background:#3b82f6}
-.sc label{font-size:.63rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px}
-.sc .v{font-size:1.3rem;font-weight:800;line-height:1.2}
-.sc .s{font-size:.65rem;color:var(--muted);margin-top:2px}
-/* PANEL */
-.pnl{background:var(--card);border:1px solid var(--border);border-radius:13px;margin:10px 12px;overflow:hidden}
-.pnl-hd{font-size:.86rem;font-weight:700;padding:13px 13px 0;display:flex;align-items:center;gap:6px}
-.pnl-body{padding:12px 13px}
-/* CHART */
-.cwrap{height:175px;position:relative;margin-top:8px}
-.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.li{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--muted)}
-.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-/* EXPENSE ITEMS */
-.ei{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
-.ei:last-child{border-bottom:none}
-.edot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:2px}
-.ebody{flex:1;min-width:0}
-.en{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.em{font-size:.7rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.eamt{font-weight:800;font-size:.92rem;white-space:nowrap;margin-bottom:5px;text-align:right}
-.eact{display:flex;gap:5px;justify-content:flex-end}
-.eact button{border-radius:7px;border:1px solid;padding:4px 9px;font-size:.72rem;font-weight:700;cursor:pointer;background:none}
-.eact .ed{color:#3b82f6;border-color:#3b82f633}.eact .ed:hover{background:#3b82f615}
-.eact .ex{color:#ef4444;border-color:#ef444433}.eact .ex:hover{background:#ef444415}
-/* FILTER CHIPS */
-.chips{display:flex;gap:7px;overflow-x:auto;padding:10px 12px 6px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{padding:7px 13px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:.76rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .2s}
-.chip.on{border-color:var(--accent);color:#fff}
-/* DATE ROW */
-.drow{display:flex;gap:7px;padding:0 12px 8px;align-items:center}
-.drow input{flex:1;background:var(--card2);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:.78rem;outline:none;-webkit-appearance:none}
-.drow input:focus{border-color:var(--accent)}
-.drow span{color:var(--muted);font-size:.75rem;flex-shrink:0}
-/* CAT ITEM */
-.ci{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--border)}
-.ci:last-child{border-bottom:none}
-.csw{width:13px;height:13px;border-radius:50%;flex-shrink:0}
-.cni{flex:1;background:transparent;border:none;color:var(--text);font-size:.9rem;outline:none;font-family:inherit}
-.cni:focus{border-bottom:1px solid var(--accent)}
-/* BADGE */
-.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:700}
-/* SHEET (bottom modal) */
+
+/* ── FAB ── */
+.fab{position:fixed;right:18px;bottom:calc(var(--nav) + var(--sab) + 14px);background:linear-gradient(135deg,#6c63ff,#3b82f6);color:#fff;width:54px;height:54px;border-radius:27px;border:none;font-size:1.6rem;cursor:pointer;box-shadow:0 4px 20px #6c63ff55;z-index:15;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.9)}
+
+/* ── BOTTOM SHEET ── */
 .sov{position:fixed;inset:0;background:#00000099;z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(3px)}
-.sov.show{display:flex}
-.sh{background:var(--card);border-radius:20px 20px 0 0;padding:18px 16px;padding-bottom:calc(18px + var(--sab));width:100%;max-height:90vh;overflow-y:auto}
+.sov.open{display:flex}
+.sh{background:var(--card);border-radius:20px 20px 0 0;padding:16px;padding-bottom:calc(16px + var(--sab));width:100%;max-height:92vh;overflow-y:auto}
 .sh-hdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px}
-.sh h2{font-size:.98rem;font-weight:800;margin-bottom:14px}
-.sh-ftr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-/* FAB */
-.fab{position:fixed;right:18px;background:linear-gradient(135deg,#6c63ff,#3b82f6);color:#fff;width:52px;height:52px;border-radius:26px;border:none;font-size:1.5rem;cursor:pointer;box-shadow:0 4px 18px #6c63ff55;z-index:20;display:flex;align-items:center;justify-content:center;transition:transform .15s}
-.fab:active{transform:scale(.93)}
-/* SYNC */
-.spill{font-size:.67rem;padding:4px 9px;border-radius:20px;border:1px solid;font-weight:700}
-.sc-ok{background:#22c55e15;color:#22c55e;border-color:#22c55e44}
-.sc-lo{background:#f59e0b15;color:#f59e0b;border-color:#f59e0b44}
-.sc-er{background:#ef444415;color:#ef4444;border-color:#ef444444}
-.sc-sy{background:#3b82f615;color:#3b82f6;border-color:#3b82f644}
-/* PROFILE */
-.pav{width:58px;height:58px;border-radius:29px;background:linear-gradient(135deg,#6c63ff,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:900;margin:0 auto 8px;color:#fff}
-/* SETTINGS ROW */
-.sr{display:flex;align-items:center;justify-content:space-between;padding:13px 13px;border-bottom:1px solid var(--border)}
-.sr:last-child{border-bottom:none}
+.sh h2{font-size:1rem;font-weight:800;margin-bottom:14px}
+.sh-ftr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+
+/* ── PROFILE ── */
+.pav{width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,#6c63ff,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;margin:0 auto 8px;color:#fff}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:13px}
+.sr+.sr{border-top:1px solid var(--border)}
 .sr-l{font-size:.88rem;font-weight:600}
-.sr-s{font-size:.72rem;color:var(--muted);margin-top:2px}
-.section-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:10px 13px 4px}
-/* TOAST */
-.toast{position:fixed;top:calc(var(--sat) + 14px);left:50%;transform:translateX(-50%) translateY(-70px);background:#1a1d27;border:1px solid var(--border);border-radius:12px;padding:10px 17px;font-size:.83rem;color:var(--text);z-index:200;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 24px #00000077;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+.sr-s{font-size:.7rem;color:var(--muted);margin-top:2px}
+.sec-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:10px 13px 4px}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:calc(var(--sat) + 12px);left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 18px;font-size:.83rem;color:var(--text);z-index:1000;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 28px #00000088;max-width:88vw;overflow:hidden;text-overflow:ellipsis}
 .toast.show{transform:translateX(-50%) translateY(0)}
-.toast.ok{border-left:3px solid #22c55e}.toast.err{border-left:3px solid #ef4444}.toast.info{border-left:3px solid #3b82f6}
-/* LOADING */
-.ldg{display:flex;flex-direction:column;align-items:center;justify-content:center;height:180px;color:var(--muted);gap:10px}
-.spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .65s linear infinite}
+.toast.ok{border-left:3px solid var(--green)}.toast.err{border-left:3px solid var(--red)}.toast.info{border-left:3px solid var(--blue)}
+
+/* ── EMPTY / LOADING ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 18px;color:var(--muted);gap:6px;text-align:center}
+.empty .ico{font-size:2.4rem;margin-bottom:4px;opacity:.6}
+.empty p{font-size:.82rem}
+.spin{width:26px;height:26px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite;margin:0 auto}
 @keyframes sp{to{transform:rotate(360deg)}}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 18px;color:var(--muted);gap:6px;text-align:center}
-.empty .ico{font-size:2.2rem;margin-bottom:4px}
-.empty p{font-size:.83rem}
-/* RESPONSIVE */
+
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:700}
+
+/* ── RESPONSIVE ── */
 @media(min-width:540px){
-  .bnav,.screen,.fab{max-width:540px;left:50%;right:auto;transform:translateX(-50%)}
-  .bnav{width:540px}
-  .toast{left:calc(50% + 0px)}
+  .bnav,.fab{max-width:540px;left:50%;right:auto;transform:translateX(-50%)}
+  .bnav{width:540px;left:50%;transform:translateX(-50%)}
+  .fab{right:calc(50% - 270px + 18px);left:auto;transform:none}
+  .screen{max-width:540px;left:50%;transform:translateX(-50%)}
   .sgrid{grid-template-columns:repeat(4,1fr)}
+  .sov .sh{max-width:540px;margin:0 auto}
 }
-/* Prevent flicker */
 input[type=date]{color-scheme:dark}
 </style>
 </head>
 <body>
 
-<!-- ═══ AUTH ═══ -->
-<div id="authWrap" class="auth-wrap">
+<!-- ══════════ AUTH SCREEN ══════════ -->
+<div id="authScreen">
   <div class="auth-box">
     <div class="auth-logo">
-      <div class="ico">💰</div>
+      <span class="ico">💰</span>
       <h2>Expense Tracker</h2>
       <p>Track smarter, spend wiser</p>
     </div>
     <div class="atabs">
-      <div class="atab on" id="atL" onclick="setMode('login')">Sign In</div>
-      <div class="atab" id="atS" onclick="setMode('signup')">Sign Up</div>
+      <button class="atab on" id="atL" onclick="setAuthMode('login')">Sign In</button>
+      <button class="atab"   id="atS" onclick="setAuthMode('signup')">Sign Up</button>
     </div>
-    <div class="fi" id="nameF" style="display:none"><label>Your Name</label><input type="text" id="aName" placeholder="e.g. Priya" autocomplete="name"></div>
-    <div class="fi"><label>Email</label><input type="email" id="aEmail" placeholder="you@example.com" autocomplete="email"></div>
-    <div class="fi"><label>Password</label><input type="password" id="aPass" placeholder="••••••••" autocomplete="current-password"></div>
+    <div id="nameRow" style="display:none">
+      <div class="fi"><label>Your Name</label><input type="text" id="aName" placeholder="e.g. Priya" autocomplete="name"></div>
+    </div>
+    <div class="fi"><label>Email</label><input type="email" id="aEmail" placeholder="you@example.com" autocomplete="email" inputmode="email"></div>
+    <div class="fi"><label>Password</label><input type="password" id="aPass" placeholder="Min 6 characters" autocomplete="current-password"></div>
     <button class="btn-primary" id="aBtn" onclick="doAuth()">Sign In</button>
-    <div class="err" id="aErr"></div>
+    <div class="auth-err" id="aErr"></div>
+    <div class="auth-note" id="aNote"></div>
   </div>
 </div>
 
-<!-- ═══ MAIN APP ═══ -->
-<div id="app" style="display:none">
+<!-- ══════════ MAIN APP ══════════ -->
+<div id="app">
 
   <!-- DASHBOARD -->
   <div class="screen active" id="s0">
     <div class="hdr">
-      <h1>💰 Expenses</h1>
-      <span class="spill sc-lo" id="pill">💾 Local</span>
+      <h1>💰 Dashboard</h1>
+      <span class="pill p-lo" id="pill">💾 Local</span>
     </div>
     <div class="sgrid">
       <div class="sc c1"><label>Total Spent</label><div class="v" id="cT">₹0</div><div class="s">filtered</div></div>
@@ -201,12 +215,9 @@ input[type=date]{color-scheme:dark}
     </div>
     <div class="pnl">
       <div class="pnl-hd">📈 6-Month Trend</div>
-      <div class="pnl-body" style="padding-bottom:10px">
-        <div class="cwrap" style="height:145px"><canvas id="bar"></canvas></div>
-      </div>
+      <div class="pnl-body"><div class="cwrap" style="height:145px"><canvas id="bar"></canvas></div></div>
     </div>
-    <div style="height:8px"></div>
-    <button class="fab" id="fabBtn" style="bottom:calc(var(--nav) + var(--sab) + 14px)" onclick="openAdd()">+</button>
+    <div style="height:10px"></div>
   </div>
 
   <!-- EXPENSES -->
@@ -221,19 +232,19 @@ input[type=date]{color-scheme:dark}
     <div class="chips" id="chips"></div>
     <div class="drow">
       <input type="date" id="fFrom" onchange="renderExp()">
-      <span>to</span>
+      <span>–</span>
       <input type="date" id="fTo" onchange="renderExp()">
-      <button class="btn bsm bm" onclick="clrFilters()">✕</button>
+      <button class="btn bsm bm" onclick="clrF()">✕</button>
     </div>
     <div style="padding:0 13px 6px;font-size:.72rem;color:var(--muted)" id="eInfo"></div>
-    <div class="pnl" style="margin-bottom:8px"><div id="expList"></div></div>
+    <div class="pnl" style="margin-bottom:10px"><div id="expList"></div></div>
   </div>
 
   <!-- CATEGORIES -->
   <div class="screen" id="s2">
     <div class="hdr">
       <h1>🏷 Categories</h1>
-      <button class="btn bsm ba" onclick="openAddCat()">+ Add</button>
+      <button class="btn bsm ba" onclick="openCatSh()">+ Add</button>
     </div>
     <div class="pnl"><div id="catEl"></div></div>
   </div>
@@ -242,37 +253,39 @@ input[type=date]{color-scheme:dark}
   <div class="screen" id="s3">
     <div class="hdr"><h1>👤 Profile</h1></div>
     <div class="pnl">
-      <div class="pnl-body" style="text-align:center;padding:16px 13px">
-        <div class="pav" id="pav">?</div>
+      <div class="pnl-body" style="text-align:center;padding:18px 13px">
+        <div class="pav" id="pavEl">?</div>
         <div style="font-weight:800;font-size:1rem" id="pName">—</div>
         <div style="font-size:.78rem;color:var(--muted);margin-top:3px" id="pEmail">—</div>
-        <div style="margin-top:10px"><span class="spill sc-lo" id="pill2">💾 Local</span></div>
+        <div style="margin-top:10px"><span class="pill p-lo" id="pill2">💾 Local</span></div>
       </div>
     </div>
-    <div class="section-lbl">Data</div>
+    <div class="sec-lbl">Backup & Restore</div>
     <div class="pnl">
-      <div class="sr"><div><div class="sr-l">Export Backup</div><div class="sr-s">Download JSON</div></div><button class="btn bsm by" onclick="expJSON()">⬇ JSON</button></div>
-      <div class="sr"><div><div class="sr-l">Import Backup</div><div class="sr-s">Restore from JSON</div></div><label class="btn bsm bb" style="cursor:pointer">⬆ JSON<input type="file" accept=".json" onchange="impJSON(event)" style="display:none"></label></div>
+      <div class="sr"><div><div class="sr-l">Export JSON Backup</div><div class="sr-s">Download all your data</div></div><button class="btn bsm by" onclick="expJSON()">⬇ JSON</button></div>
+      <div class="sr"><div><div class="sr-l">Import Backup</div><div class="sr-s">Restore from JSON file</div></div><label class="btn bsm bb" style="cursor:pointer">⬆ JSON<input type="file" accept=".json" onchange="impJSON(event)" style="display:none"></label></div>
     </div>
-    <div class="section-lbl">Account</div>
+    <div class="sec-lbl">Danger Zone</div>
     <div class="pnl">
-      <div class="sr"><div><div class="sr-l" style="color:var(--red)">Delete All Data</div><div class="sr-s">Cannot be undone</div></div><button class="btn bsm br" onclick="resetAll()">Delete</button></div>
-      <div class="sr"><div class="sr-l">Sign Out</div><button class="btn bsm bm" onclick="doSignOut()">Sign Out</button></div>
+      <div class="sr"><div><div class="sr-l" style="color:var(--red)">Delete All My Data</div><div class="sr-s">Removes all expenses permanently</div></div><button class="btn bsm br" onclick="resetAll()">Delete</button></div>
+      <div class="sr"><div><div class="sr-l">Sign Out</div><div class="sr-s" id="signOutNote">Clears local session</div></div><button class="btn bsm bm" id="signOutBtn" onclick="doSignOut()">Sign Out</button></div>
     </div>
-    <div style="height:16px"></div>
+    <div style="height:20px"></div>
   </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bnav">
-    <button class="ni on" id="n0" onclick="nav(0)"><span class="ni-ico">📊</span>Dashboard</button>
-    <button class="ni" id="n1" onclick="nav(1)"><span class="ni-ico">🧾</span>Expenses</button>
-    <button class="ni" id="n2" onclick="nav(2)"><span class="ni-ico">🏷</span>Categories</button>
-    <button class="ni" id="n3" onclick="nav(3)"><span class="ni-ico">👤</span>Profile</button>
+    <button class="ni on" id="n0" onclick="goNav(0)"><span class="ni-i">📊</span>Dashboard</button>
+    <button class="ni"    id="n1" onclick="goNav(1)"><span class="ni-i">🧾</span>Expenses</button>
+    <button class="ni"    id="n2" onclick="goNav(2)"><span class="ni-i">🏷</span>Categories</button>
+    <button class="ni"    id="n3" onclick="goNav(3)"><span class="ni-i">👤</span>Profile</button>
   </nav>
+
+  <button class="fab" onclick="openAddSh()">+</button>
 </div>
 
 <!-- ADD EXPENSE SHEET -->
-<div class="sov" id="addSh" onclick="if(event.target===this)closeAdd()">
+<div class="sov" id="addSh" onclick="if(event.target===this)closeAddSh()">
   <div class="sh">
     <div class="sh-hdl"></div>
     <h2>➕ Add Expense</h2>
@@ -288,7 +301,7 @@ input[type=date]{color-scheme:dark}
 </div>
 
 <!-- EDIT SHEET -->
-<div class="sov" id="editSh" onclick="if(event.target===this)closeEdit()">
+<div class="sov" id="editSh" onclick="if(event.target===this)closeEditSh()">
   <div class="sh">
     <div class="sh-hdl"></div>
     <h2>✏️ Edit Expense</h2>
@@ -301,20 +314,20 @@ input[type=date]{color-scheme:dark}
     <div class="fi"><label>Category</label><select id="edCat"></select></div>
     <div class="fi"><label>Note</label><textarea id="edNote" rows="2"></textarea></div>
     <div class="sh-ftr">
-      <button class="btn bm" style="justify-content:center;width:100%;padding:12px" onclick="closeEdit()">Cancel</button>
+      <button class="btn bm" style="width:100%;justify-content:center;padding:12px" onclick="closeEditSh()">Cancel</button>
       <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
     </div>
   </div>
 </div>
 
 <!-- ADD CATEGORY SHEET -->
-<div class="sov" id="catSh" onclick="if(event.target===this)closeAddCat()">
+<div class="sov" id="catSh" onclick="if(event.target===this)closeCatSh()">
   <div class="sh">
     <div class="sh-hdl"></div>
     <h2>🏷 New Category</h2>
     <div class="fi"><label>Name</label><input type="text" id="ncName" placeholder="e.g. Gym" maxlength="28"></div>
-    <div class="fi"><label>Colour</label><input type="color" id="ncCol" value="#6c63ff" style="width:100%;height:46px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer"></div>
-    <div class="err" id="catErr"></div>
+    <div class="fi"><label>Colour</label><input type="color" id="ncCol" value="#6c63ff" style="height:46px;border-radius:10px;cursor:pointer"></div>
+    <div class="auth-err" id="catErr" style="text-align:left"></div>
     <button class="btn-primary" onclick="addCat()">+ Add Category</button>
   </div>
 </div>
@@ -327,440 +340,583 @@ input[type=date]{color-scheme:dark}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <script>
-// ═══════════════════════════════════════════════
-//  CONFIG — paste your credentials here
-// ═══════════════════════════════════════════════
-const SB_URL = 'https://mdcorbmrsbuwblklxwzk.supabase.co';   // 'https://xxxx.supabase.co'
-const SB_KEY = 'sb_publishable_7u5f8gpanzGerk0r4dG2KQ_KfgN8_Os';   // 'eyJhbGci...'
+// ╔══════════════════════════════════════╗
+// ║  PASTE YOUR SUPABASE CREDENTIALS     ║
+// ╚══════════════════════════════════════╝
+const SB_URL = '';  // 'https://xxxx.supabase.co'
+const SB_KEY = '';  // 'eyJhbGci...'
 
-// ─── globals ───
-let sb=null, user=null, expenses=[], categories=[], catF='', dc=null, bc2=null;
+// ── globals ──
+let sb = null, user = null, expenses = [], categories = [];
+let catFilter = '', donutChart = null, barChart = null;
 
-const DEF_CATS=[
+const DEF_CATS = [
   {name:'Food & Dining',color:'#f59e0b'},{name:'Housing & Rent',color:'#6c63ff'},
   {name:'Transport',color:'#3b82f6'},{name:'Shopping',color:'#ec4899'},
   {name:'Health',color:'#22c55e'},{name:'Entertainment',color:'#f97316'},
-  {name:'Education',color:'#06b6d4'},{name:'Utilities',color:'#8b5cf6'},{name:'Others',color:'#94a3b8'}
+  {name:'Education',color:'#06b6d4'},{name:'Utilities',color:'#8b5cf6'},
+  {name:'Others',color:'#94a3b8'}
 ];
 
-// ═══ INIT ═══
-window.addEventListener('load', async()=>{
-  if(SB_URL && SB_KEY){
+// ══════════ INIT ══════════
+window.addEventListener('load', async () => {
+  if (SB_URL && SB_KEY) {
     sb = supabase.createClient(SB_URL, SB_KEY);
-    const {data:{session}} = await sb.auth.getSession();
-    if(session){ user=session.user; loadCache(); boot(); }
-    else { showAuth(); }
+    // Listen to auth state changes — this is the key fix
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        user = session.user;
+        loadCacheForUser();
+        showApp();
+        syncCloud();
+      } else if (event === 'SIGNED_OUT') {
+        user = null; expenses = []; categories = [];
+        resetAuthForm();   // ← fully resets form + buttons
+        showAuthScreen();
+      }
+    });
+    // Check existing session on page load
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      user = session.user;
+      loadCacheForUser();
+      showApp();
+      syncCloud();
+    } else {
+      showAuthScreen();
+    }
   } else {
-    user={id:'local',email:'local',user_metadata:{name:'You'}};
-    loadCache(); boot();
+    // Local-only mode (no Supabase credentials set)
+    user = { id:'local', email:'local@device', user_metadata:{ name:'Me' } };
+    loadCacheForUser();
+    showApp();
   }
 });
 
-// ═══ AUTH ═══
-let mode='login';
-function setMode(m){
-  mode=m;
-  document.getElementById('atL').classList.toggle('on',m==='login');
-  document.getElementById('atS').classList.toggle('on',m==='signup');
-  document.getElementById('nameF').style.display=m==='signup'?'block':'none';
-  document.getElementById('aBtn').textContent=m==='login'?'Sign In':'Create Account';
-  document.getElementById('aErr').textContent='';
+// ══════════ AUTH HELPERS ══════════
+let authMode = 'login';
+
+function setAuthMode(m) {
+  authMode = m;
+  document.getElementById('atL').classList.toggle('on', m === 'login');
+  document.getElementById('atS').classList.toggle('on', m === 'signup');
+  document.getElementById('nameRow').style.display = m === 'signup' ? 'block' : 'none';
+  document.getElementById('aBtn').textContent = m === 'login' ? 'Sign In' : 'Create Account';
+  document.getElementById('aErr').textContent = '';
+  document.getElementById('aNote').textContent = '';
+  enableAuthBtn();
 }
-function showAuth(){
-  document.getElementById('authWrap').style.display='flex';
-  document.getElementById('app').style.display='none';
+
+function enableAuthBtn() {
+  const btn = document.getElementById('aBtn');
+  btn.disabled = false;
+  btn.textContent = authMode === 'login' ? 'Sign In' : 'Create Account';
 }
-async function doAuth(){
-  const email=document.getElementById('aEmail').value.trim();
-  const pass=document.getElementById('aPass').value;
-  const name=document.getElementById('aName').value.trim();
-  const btn=document.getElementById('aBtn'), err=document.getElementById('aErr');
-  if(!email||!pass){err.textContent='Enter email and password';return;}
-  btn.disabled=true; btn.textContent='Please wait…'; err.textContent='';
-  try{
-    let r;
-    if(mode==='login'){
-      r=await sb.auth.signInWithPassword({email,password:pass});
+
+function resetAuthForm() {
+  document.getElementById('aEmail').value = '';
+  document.getElementById('aPass').value = '';
+  document.getElementById('aName').value = '';
+  document.getElementById('aErr').textContent = '';
+  document.getElementById('aNote').textContent = '';
+  // Force re-enable button + reset to login mode
+  authMode = 'login';
+  document.getElementById('atL').classList.add('on');
+  document.getElementById('atS').classList.remove('on');
+  document.getElementById('nameRow').style.display = 'none';
+  document.getElementById('aBtn').disabled = false;
+  document.getElementById('aBtn').textContent = 'Sign In';
+}
+
+function showAuthScreen() {
+  document.getElementById('authScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('eDate').value = today();
+  const name = user?.user_metadata?.name || user?.email?.split('@')[0] || 'You';
+  document.getElementById('pName').textContent = name;
+  document.getElementById('pEmail').textContent = user?.email || 'Local';
+  document.getElementById('pavEl').textContent = name[0].toUpperCase();
+  if (!sb) {
+    document.getElementById('signOutNote').textContent = 'No Supabase connected';
+    document.getElementById('signOutBtn').textContent = 'Exit';
+  }
+  buildChips(); populateDDs(); renderDash(); renderExp(); renderCats();
+  setPill('lo');
+}
+
+// ══════════ DO AUTH ══════════
+async function doAuth() {
+  const email = document.getElementById('aEmail').value.trim();
+  const pass  = document.getElementById('aPass').value;
+  const name  = document.getElementById('aName').value.trim();
+  const btn   = document.getElementById('aBtn');
+  const err   = document.getElementById('aErr');
+  const note  = document.getElementById('aNote');
+
+  err.textContent = '';
+  note.textContent = '';
+
+  if (!email || !pass) { err.textContent = 'Enter your email and password.'; return; }
+  if (pass.length < 6)  { err.textContent = 'Password must be at least 6 characters.'; return; }
+  if (authMode === 'signup' && !name) { err.textContent = 'Enter your name.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = authMode === 'login' ? 'Signing in…' : 'Creating account…';
+
+  try {
+    if (authMode === 'login') {
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      // onAuthStateChange handles the rest
     } else {
-      if(!name){err.textContent='Enter your name';btn.disabled=false;btn.textContent='Create Account';return;}
-      r=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
+      const { data, error } = await sb.auth.signUp({
+        email, password: pass,
+        options: { data: { name } }
+      });
+      if (error) throw error;
+      // Check if email confirmation is required
+      if (data.user && !data.session) {
+        note.textContent = '✅ Check your email to confirm your account, then sign in.';
+        enableAuthBtn();
+        setAuthMode('login');
+      }
+      // If session exists, onAuthStateChange fires automatically
     }
-    if(r.error) throw r.error;
-    user=r.data.user||r.data.session?.user;
-    if(!user){err.textContent='Check your email to verify your account, then sign in.';btn.disabled=false;btn.textContent=mode==='login'?'Sign In':'Create Account';return;}
-    loadCache(); boot(); syncCloud();
-  } catch(e){
-    err.textContent=e.message;
-    btn.disabled=false; btn.textContent=mode==='login'?'Sign In':'Create Account';
+  } catch (e) {
+    err.textContent = friendlyError(e.message);
+    enableAuthBtn();
   }
 }
-async function doSignOut(){
-  if(!confirm('Sign out?'))return;
-  if(sb) await sb.auth.signOut();
-  user=null; expenses=[]; categories=[];
-  ['aEmail','aPass','aName'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('aErr').textContent='';
-  setMode('login');
-  showAuth();
+
+function friendlyError(msg) {
+  if (msg.includes('Invalid login')) return 'Incorrect email or password.';
+  if (msg.includes('already registered')) return 'This email is already registered. Try signing in.';
+  if (msg.includes('not confirmed')) return 'Please confirm your email first, then sign in.';
+  if (msg.includes('rate limit')) return 'Too many attempts. Wait a moment and try again.';
+  return msg;
 }
 
-// ═══ CACHE ═══
-const uid=()=>user?.id||'local';
-function loadCache(){
-  expenses=JSON.parse(localStorage.getItem('e_'+uid())||'[]');
-  categories=JSON.parse(localStorage.getItem('c_'+uid())||'null')||[...DEF_CATS.map(c=>({...c}))];
-}
-function saveCache(){
-  localStorage.setItem('e_'+uid(),JSON.stringify(expenses));
-  localStorage.setItem('c_'+uid(),JSON.stringify(categories));
-}
-
-// ═══ BOOT ═══
-function boot(){
-  document.getElementById('authWrap').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('eDate').value=new Date().toISOString().split('T')[0];
-  const name=user?.user_metadata?.name||user?.email?.split('@')[0]||'You';
-  document.getElementById('pName').textContent=name;
-  document.getElementById('pEmail').textContent=user?.email||'Local mode';
-  document.getElementById('pav').textContent=name[0].toUpperCase();
-  populateDDs(); buildChips(); renderDash(); renderExp(); renderCats();
+// ══════════ SIGN OUT ══════════
+async function doSignOut() {
+  if (!confirm('Sign out of your account?')) return;
+  expenses = []; categories = [];
+  if (sb) {
+    await sb.auth.signOut();
+    // onAuthStateChange fires SIGNED_OUT → handles the rest
+  } else {
+    user = null;
+    resetAuthForm();
+    showAuthScreen();
+  }
 }
 
-// ═══ CLOUD ═══
-async function syncCloud(){
-  if(!sb||!user||user.id==='local')return;
+// ══════════ CACHE (per user) ══════════
+function uid() { return user?.id || 'local'; }
+function today() { return new Date().toISOString().split('T')[0]; }
+
+function loadCacheForUser() {
+  expenses   = JSON.parse(localStorage.getItem('e_' + uid()) || '[]');
+  categories = JSON.parse(localStorage.getItem('c_' + uid()) || 'null') || DEF_CATS.map(c => ({...c}));
+}
+
+function saveCache() {
+  localStorage.setItem('e_' + uid(), JSON.stringify(expenses));
+  localStorage.setItem('c_' + uid(), JSON.stringify(categories));
+}
+
+// ══════════ CLOUD SYNC ══════════
+async function syncCloud() {
+  if (!sb || !user || user.id === 'local') return;
   setPill('sy');
-  try{
-    const [er,cr]=await Promise.all([
-      sb.from('expenses').select('*').eq('user_id',user.id).order('date',{ascending:false}),
-      sb.from('categories').select('*').eq('user_id',user.id)
+  try {
+    const [{ data: exps, error: ee }, { data: cats, error: ce }] = await Promise.all([
+      sb.from('expenses').select('*').eq('user_id', user.id).order('date', { ascending: false }).order('id', { ascending: false }),
+      sb.from('categories').select('*').eq('user_id', user.id)
     ]);
-    if(er.error||cr.error) throw er.error||cr.error;
-    expenses=er.data||[];
-    if(cr.data?.length) categories=cr.data;
-    else await pushCats();
-    saveCache(); populateDDs(); buildChips();
-    renderDash(); renderExp(); renderCats();
-    setPill('ok'); toast('Synced ✅','ok');
-  }catch(e){ setPill('er'); toast('Sync error','err'); console.error(e); }
-}
-async function pushCats(){
-  if(!sb||!user||user.id==='local')return;
-  await sb.from('categories').delete().eq('user_id',user.id);
-  await sb.from('categories').insert(categories.map(({name,color})=>({name,color,user_id:user.id})));
+    if (ee) throw ee;
+    if (ce) throw ce;
+
+    expenses = exps || [];
+    if (cats && cats.length > 0) {
+      categories = cats;
+    } else {
+      // First time for this user — push default categories to cloud
+      await pushCats();
+    }
+    saveCache();
+    buildChips(); populateDDs(); renderDash(); renderExp(); renderCats();
+    setPill('ok');
+    toast('Synced ✅', 'ok');
+  } catch (e) {
+    setPill('er');
+    toast('Sync error — check credentials', 'err');
+    console.error('Sync error:', e);
+  }
 }
 
-// ═══ SYNC PILL ═══
-function setPill(s){
-  const cls={ok:'sc-ok',sy:'sc-sy',er:'sc-er',lo:'sc-lo'};
-  const txt={ok:'☁ Synced',sy:'↻ Syncing',er:'⚠ Error',lo:'💾 Local'};
-  ['pill','pill2'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    el.className='spill '+(cls[s]||'sc-lo');
-    el.textContent=txt[s]||'Local';
+async function pushCats() {
+  if (!sb || !user || user.id === 'local') return;
+  try {
+    await sb.from('categories').delete().eq('user_id', user.id);
+    const rows = categories.map(({ name, color }) => ({ name, color, user_id: user.id }));
+    const { data, error } = await sb.from('categories').insert(rows).select();
+    if (error) throw error;
+    if (data) categories = data;
+    saveCache();
+  } catch (e) { console.error('pushCats error:', e); }
+}
+
+function setPill(s) {
+  const map = { ok: ['p-ok','☁ Synced'], sy: ['p-sy','↻ Syncing…'], er: ['p-er','⚠ Error'], lo: ['p-lo','💾 Local'] };
+  const [cls, txt] = map[s] || map.lo;
+  ['pill','pill2'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    el.className = 'pill ' + cls; el.textContent = txt;
   });
 }
 
-// ═══ NAV ═══
-let curS=0;
-function nav(i){
-  document.querySelectorAll('.screen').forEach((s,j)=>{s.classList.toggle('active',j===i);s.scrollTop=0;});
-  document.querySelectorAll('.ni').forEach((n,j)=>n.classList.toggle('on',j===i));
-  curS=i;
-  if(i===1) renderExp();
-  if(i===2) renderCats();
+// ══════════ NAVIGATION ══════════
+let curTab = 0;
+function goNav(i) {
+  document.querySelectorAll('.screen').forEach((s, j) => { s.classList.toggle('active', j === i); if (j === i) s.scrollTop = 0; });
+  document.querySelectorAll('.ni').forEach((n, j) => n.classList.toggle('on', j === i));
+  curTab = i;
+  if (i === 1) renderExp();
+  if (i === 2) renderCats();
 }
 
-// ═══ HELPERS ═══
-function cc(n){return(categories.find(c=>c.name===n)||{color:'#94a3b8'}).color;}
-function fd(d){return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short'});}
-function inr(n){return '₹'+Number(n).toLocaleString('en-IN');}
-function toast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast '+type+' show';
-  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3000);
+// ══════════ HELPERS ══════════
+function cc(n) { return (categories.find(c => c.name === n) || { color: '#94a3b8' }).color; }
+function fd(d) { return new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); }
+function inr(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + type + ' show';
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 3200);
 }
 
-// ═══ DROPDOWNS ═══
-function populateDDs(){
-  ['eCat','edCat'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    const pv=el.value;
-    el.innerHTML=categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-    if(categories.find(c=>c.name===pv)) el.value=pv;
+// ══════════ DROPDOWNS ══════════
+function populateDDs() {
+  ['eCat', 'edCat'].forEach(id => {
+    const el = document.getElementById(id); if (!el) return;
+    const pv = el.value;
+    el.innerHTML = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+    if (categories.find(c => c.name === pv)) el.value = pv;
   });
 }
 
-// ═══ FILTER ═══
-function getF(){
-  const from=document.getElementById('fFrom')?.value||'';
-  const to=document.getElementById('fTo')?.value||'';
-  return expenses.filter(e=>{
-    if(from&&e.date<from)return false;
-    if(to&&e.date>to)return false;
-    if(catF&&e.cat!==catF)return false;
+// ══════════ FILTERS ══════════
+function getFiltered() {
+  const from = document.getElementById('fFrom')?.value || '';
+  const to   = document.getElementById('fTo')?.value   || '';
+  return expenses.filter(e => {
+    if (from && e.date < from) return false;
+    if (to   && e.date > to)   return false;
+    if (catFilter && e.cat !== catFilter) return false;
     return true;
   });
 }
-function buildChips(){
-  const el=document.getElementById('chips');
-  el.innerHTML=`<div class="chip ${catF===''?'on':''}" onclick="setCF('')">All</div>`
-    +categories.map(c=>`<div class="chip ${catF===c.name?'on':''}" onclick="setCF('${c.name.replace(/'/g,"\\'")}')"`
-      +(catF===c.name?` style="background:${c.color};border-color:${c.color}"`:'')+`>${c.name}</div>`).join('');
+function buildChips() {
+  const el = document.getElementById('chips'); if (!el) return;
+  el.innerHTML = `<div class="chip ${catFilter===''?'on':''}" style="${catFilter===''?'background:var(--accent);border-color:var(--accent)':''}" onclick="setCF('')">All</div>`
+    + categories.map(c =>
+        `<div class="chip ${catFilter===c.name?'on':''}" style="${catFilter===c.name?`background:${c.color};border-color:${c.color}`:''}" onclick="setCF('${c.name.replace(/'/g,"\\'")}')"> ${c.name}</div>`
+      ).join('');
 }
-function setCF(c){catF=c;buildChips();renderExp();renderDash();}
-function clrFilters(){document.getElementById('fFrom').value='';document.getElementById('fTo').value='';catF='';buildChips();renderExp();renderDash();}
+function setCF(c) { catFilter = c; buildChips(); renderExp(); renderDash(); }
+function clrF() {
+  document.getElementById('fFrom').value = '';
+  document.getElementById('fTo').value   = '';
+  catFilter = ''; buildChips(); renderExp(); renderDash();
+}
 
-// ═══ DASHBOARD ═══
-function renderDash(){
-  const f=getF();
-  const tot=f.reduce((s,e)=>s+Number(e.amt),0);
-  document.getElementById('cT').textContent=inr(tot);
-  document.getElementById('cN').textContent=f.length;
-  document.getElementById('cA').textContent=f.length?inr(Math.round(tot/f.length)):inr(0);
-  const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
-  const top=Object.entries(bc).sort((a,b)=>b[1]-a[1])[0];
-  document.getElementById('cTop').textContent=top?top[0]:'—';
-  document.getElementById('cTopA').textContent=top?inr(top[1]):'';
-  renderDonut(f); renderBar2();
+// ══════════ DASHBOARD ══════════
+function renderDash() {
+  const f = getFiltered();
+  const tot = f.reduce((s, e) => s + Number(e.amt), 0);
+  document.getElementById('cT').textContent = inr(tot);
+  document.getElementById('cN').textContent = f.length;
+  document.getElementById('cA').textContent = f.length ? inr(Math.round(tot / f.length)) : inr(0);
+  const bc = {}; f.forEach(e => { bc[e.cat] = (bc[e.cat] || 0) + Number(e.amt); });
+  const top = Object.entries(bc).sort((a, b) => b[1] - a[1])[0];
+  document.getElementById('cTop').textContent = top ? top[0] : '—';
+  document.getElementById('cTopA').textContent = top ? inr(top[1]) : '';
+  renderDonut(f); renderBarChart();
 }
-function renderDonut(f){
-  const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
-  const labels=Object.keys(bc),data=labels.map(l=>bc[l]),clrs=labels.map(l=>cc(l));
-  if(dc)dc.destroy();
-  const leg=document.getElementById('leg');
-  if(!labels.length){leg.innerHTML='<span style="font-size:.75rem;color:var(--muted)">No data yet</span>';return;}
-  dc=new Chart(document.getElementById('donut').getContext('2d'),{
-    type:'doughnut',
-    data:{labels,datasets:[{data,backgroundColor:clrs,borderWidth:0,hoverOffset:6}]},
-    options:{cutout:'65%',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+inr(c.parsed)}}}}
+function renderDonut(f) {
+  const bc = {}; f.forEach(e => { bc[e.cat] = (bc[e.cat] || 0) + Number(e.amt); });
+  const labels = Object.keys(bc), data = labels.map(l => bc[l]), clrs = labels.map(l => cc(l));
+  if (donutChart) donutChart.destroy();
+  const leg = document.getElementById('leg');
+  if (!labels.length) { leg.innerHTML = '<span style="font-size:.75rem;color:var(--muted)">No data yet — add an expense!</span>'; return; }
+  donutChart = new Chart(document.getElementById('donut').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: clrs, borderWidth: 0, hoverOffset: 6 }] },
+    options: { cutout: '65%', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ' ' + inr(c.parsed) } } } }
   });
-  leg.innerHTML=labels.map((l,i)=>`<div class="li"><div class="ld" style="background:${clrs[i]}"></div>${l}</div>`).join('');
+  leg.innerHTML = labels.map((l, i) => `<div class="li"><div class="ld" style="background:${clrs[i]}"></div>${l}</div>`).join('');
 }
-function renderBar2(){
-  const ms=[],ts=[];
-  for(let i=5;i>=0;i--){
-    const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-i);
-    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    ms.push(d.toLocaleString('default',{month:'short'}));
-    ts.push(expenses.filter(e=>e.date?.startsWith(k)).reduce((s,e)=>s+Number(e.amt),0));
+function renderBarChart() {
+  const ms = [], ts = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    ms.push(d.toLocaleString('default', { month: 'short' }));
+    ts.push(expenses.filter(e => e.date?.startsWith(k)).reduce((s, e) => s + Number(e.amt), 0));
   }
-  if(bc2)bc2.destroy();
-  bc2=new Chart(document.getElementById('bar').getContext('2d'),{
-    type:'bar',
-    data:{labels:ms,datasets:[{data:ts,backgroundColor:'#6c63ff88',borderColor:'#6c63ff',borderWidth:2,borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#2d314820'},ticks:{color:'#94a3b8',font:{size:10}}},
-        y:{grid:{color:'#2d314820'},ticks:{color:'#94a3b8',font:{size:10},callback:v=>'₹'+v.toLocaleString('en-IN')}}}}
+  if (barChart) barChart.destroy();
+  barChart = new Chart(document.getElementById('bar').getContext('2d'), {
+    type: 'bar',
+    data: { labels: ms, datasets: [{ data: ts, backgroundColor: '#6c63ff88', borderColor: '#6c63ff', borderWidth: 2, borderRadius: 5 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#2d314820' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+        y: { grid: { color: '#2d314820' }, ticks: { color: '#94a3b8', font: { size: 10 }, callback: v => '₹' + v.toLocaleString('en-IN') } }
+      }
+    }
   });
 }
 
-// ═══ EXPENSES LIST ═══
-function renderExp(){
-  const f=getF().slice().sort((a,b)=>b.date?.localeCompare(a.date)||0);
-  const el=document.getElementById('expList');
-  const info=document.getElementById('eInfo');
-  if(info)info.textContent=`${f.length} of ${expenses.length} records`;
-  if(!f.length){el.innerHTML=`<div class="empty"><div class="ico">🧾</div><p>No expenses found</p><p>Adjust filters or add one from Dashboard</p></div>`;return;}
-  el.innerHTML=f.map(e=>`<div class="ei">
+// ══════════ EXPENSES LIST ══════════
+function renderExp() {
+  const f = getFiltered().slice().sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.id - a.id);
+  const el = document.getElementById('expList');
+  const info = document.getElementById('eInfo');
+  if (info) info.textContent = `${f.length} of ${expenses.length} records`;
+  if (!f.length) {
+    el.innerHTML = `<div class="empty"><div class="ico">🧾</div><p>No expenses found.</p><p>Tap + to add one.</p></div>`;
+    return;
+  }
+  el.innerHTML = f.map(e => `<div class="ei">
     <div class="edot" style="background:${cc(e.cat)}"></div>
     <div class="ebody">
       <div class="en">${e.name}</div>
-      <div class="em">${fd(e.date)} · <span class="bdg" style="background:${cc(e.cat)}22;color:${cc(e.cat)}">${e.cat}</span>${e.note?` · ${e.note}`:''}</div>
+      <div class="em">${fd(e.date)} · <span class="bdg" style="background:${cc(e.cat)}22;color:${cc(e.cat)}">${e.cat}</span>${e.note ? ' · ' + e.note : ''}</div>
     </div>
     <div>
       <div class="eamt">${inr(e.amt)}</div>
       <div class="eact">
-        <button class="ed" onclick="openEdit(${e.id})">✏</button>
+        <button class="ed" onclick="openEditSh(${e.id})">✏</button>
         <button class="ex" onclick="delE(${e.id})">✕</button>
       </div>
     </div>
   </div>`).join('');
 }
 
-// ═══ ADD EXPENSE ═══
-function openAdd(){document.getElementById('addSh').classList.add('show');document.getElementById('eName').focus();}
-function closeAdd(){document.getElementById('addSh').classList.remove('show');}
-async function addExp(){
-  const name=document.getElementById('eName').value.trim();
-  const amt=parseFloat(document.getElementById('eAmt').value);
-  const cat=document.getElementById('eCat').value;
-  const date=document.getElementById('eDate').value;
-  const note=document.getElementById('eNote').value.trim();
-  if(!name||!amt||isNaN(amt)||!date){toast('Fill required fields','err');return;}
-  const btn=document.getElementById('addBtn');
-  btn.disabled=true;btn.textContent='Saving…';
-  if(sb&&user&&user.id!=='local'){
-    const {data,error}=await sb.from('expenses').insert([{name,amt,cat,date,note,user_id:user.id}]).select();
-    if(error){toast('Save failed: '+error.message,'err');btn.disabled=false;btn.textContent='💾 Save Expense';return;}
-    expenses.unshift(data[0]);
-  } else {
-    expenses.unshift({id:Date.now(),name,amt,cat,date,note});
+// ══════════ ADD EXPENSE ══════════
+function openAddSh()  { document.getElementById('addSh').classList.add('open'); setTimeout(()=>document.getElementById('eName').focus(), 300); }
+function closeAddSh() { document.getElementById('addSh').classList.remove('open'); }
+
+async function addExp() {
+  const name = document.getElementById('eName').value.trim();
+  const amt  = parseFloat(document.getElementById('eAmt').value);
+  const cat  = document.getElementById('eCat').value;
+  const date = document.getElementById('eDate').value;
+  const note = document.getElementById('eNote').value.trim();
+  if (!name || !amt || isNaN(amt) || !date) { toast('Fill all required fields', 'err'); return; }
+
+  const btn = document.getElementById('addBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  try {
+    if (sb && user && user.id !== 'local') {
+      const { data, error } = await sb.from('expenses')
+        .insert([{ name, amt, cat, date, note, user_id: user.id }]).select();
+      if (error) throw error;
+      expenses.unshift(data[0]);
+    } else {
+      expenses.unshift({ id: Date.now(), name, amt, cat, date, note });
+    }
+    saveCache();
+    document.getElementById('eName').value = '';
+    document.getElementById('eAmt').value  = '';
+    document.getElementById('eNote').value = '';
+    closeAddSh();
+    toast('Expense saved ✅', 'ok');
+    renderDash(); renderExp();
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Save Expense';
   }
-  saveCache();
-  ['eName','eAmt','eNote'].forEach(id=>document.getElementById(id).value='');
-  btn.disabled=false;btn.textContent='💾 Save Expense';
-  closeAdd();toast('Saved ✅','ok');renderDash();renderExp();
 }
 
-// ═══ EDIT ═══
-function openEdit(id){
-  const e=expenses.find(x=>x.id==id);if(!e)return;
-  document.getElementById('eId').value=id;
-  document.getElementById('edName').value=e.name;
-  document.getElementById('edAmt').value=e.amt;
-  document.getElementById('edDate').value=e.date;
-  document.getElementById('edNote').value=e.note||'';
-  populateDDs();document.getElementById('edCat').value=e.cat;
-  document.getElementById('editSh').classList.add('show');
+// ══════════ EDIT ══════════
+function openEditSh(id) {
+  const e = expenses.find(x => x.id == id); if (!e) return;
+  document.getElementById('eId').value    = id;
+  document.getElementById('edName').value = e.name;
+  document.getElementById('edAmt').value  = e.amt;
+  document.getElementById('edDate').value = e.date;
+  document.getElementById('edNote').value = e.note || '';
+  populateDDs();
+  document.getElementById('edCat').value  = e.cat;
+  document.getElementById('editSh').classList.add('open');
 }
-function closeEdit(){document.getElementById('editSh').classList.remove('show');}
-async function saveEdit(){
-  const id=document.getElementById('eId').value;
-  const idx=expenses.findIndex(x=>x.id==id);if(idx<0)return;
-  const upd={...expenses[idx],name:document.getElementById('edName').value.trim(),amt:parseFloat(document.getElementById('edAmt').value),cat:document.getElementById('edCat').value,date:document.getElementById('edDate').value,note:document.getElementById('edNote').value.trim()};
-  if(sb&&user&&user.id!=='local'){
-    const {error}=await sb.from('expenses').update({name:upd.name,amt:upd.amt,cat:upd.cat,date:upd.date,note:upd.note}).eq('id',id);
-    if(error){toast('Update failed','err');return;}
-  }
-  expenses[idx]=upd;saveCache();closeEdit();toast('Updated ✅','ok');renderDash();renderExp();
-}
-async function delE(id){
-  if(!confirm('Delete this expense?'))return;
-  if(sb&&user&&user.id!=='local'){
-    const {error}=await sb.from('expenses').delete().eq('id',id);
-    if(error){toast('Delete failed','err');return;}
-  }
-  expenses=expenses.filter(e=>e.id!=id);saveCache();toast('Deleted','ok');renderDash();renderExp();
+function closeEditSh() { document.getElementById('editSh').classList.remove('open'); }
+
+async function saveEdit() {
+  const id  = document.getElementById('eId').value;
+  const idx = expenses.findIndex(x => x.id == id); if (idx < 0) return;
+  const upd = { ...expenses[idx],
+    name: document.getElementById('edName').value.trim(),
+    amt:  parseFloat(document.getElementById('edAmt').value),
+    cat:  document.getElementById('edCat').value,
+    date: document.getElementById('edDate').value,
+    note: document.getElementById('edNote').value.trim()
+  };
+  try {
+    if (sb && user && user.id !== 'local') {
+      const { error } = await sb.from('expenses')
+        .update({ name: upd.name, amt: upd.amt, cat: upd.cat, date: upd.date, note: upd.note })
+        .eq('id', id).eq('user_id', user.id);
+      if (error) throw error;
+    }
+    expenses[idx] = upd; saveCache();
+    closeEditSh(); toast('Updated ✅', 'ok'); renderDash(); renderExp();
+  } catch (e) { toast('Update failed: ' + e.message, 'err'); }
 }
 
-// ═══ CATEGORIES ═══
-function renderCats(){
-  const el=document.getElementById('catEl');
-  if(!categories.length){el.innerHTML=`<div class="empty"><div class="ico">🏷</div><p>No categories yet</p></div>`;return;}
-  el.innerHTML=categories.map((c,i)=>`<div class="ci">
+async function delE(id) {
+  if (!confirm('Delete this expense?')) return;
+  try {
+    if (sb && user && user.id !== 'local') {
+      const { error } = await sb.from('expenses').delete().eq('id', id).eq('user_id', user.id);
+      if (error) throw error;
+    }
+    expenses = expenses.filter(e => e.id != id); saveCache();
+    toast('Deleted', 'ok'); renderDash(); renderExp();
+  } catch (e) { toast('Delete failed: ' + e.message, 'err'); }
+}
+
+// ══════════ CATEGORIES ══════════
+function renderCats() {
+  const el = document.getElementById('catEl'); if (!el) return;
+  if (!categories.length) { el.innerHTML = `<div class="empty"><div class="ico">🏷</div><p>No categories yet</p></div>`; return; }
+  el.innerHTML = categories.map((c, i) => `<div class="ci">
     <div class="csw" style="background:${c.color}"></div>
     <input class="cni" value="${c.name}" onblur="renCat(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
-    <input type="color" value="${c.color}" style="width:28px;height:26px;padding:2px;border:none;background:none;cursor:pointer;border-radius:5px;flex-shrink:0" onchange="chgCatClr(${i},this.value)">
-    <button class="btn bsm br" style="padding:5px 9px" onclick="delCat(${i})">✕</button>
+    <input type="color" value="${c.color}" style="width:28px;height:26px;padding:2px;border:none;background:none;cursor:pointer;border-radius:5px;flex-shrink:0" onchange="chgClr(${i},this.value)">
+    <button class="btn bsm br" style="padding:5px 8px" onclick="delCat(${i})">✕</button>
   </div>`).join('');
 }
-function openAddCat(){document.getElementById('catErr').textContent='';document.getElementById('catSh').classList.add('show');}
-function closeAddCat(){document.getElementById('catSh').classList.remove('show');}
-async function addCat(){
-  const name=document.getElementById('ncName').value.trim();
-  const color=document.getElementById('ncCol').value;
-  const err=document.getElementById('catErr');
-  if(!name){err.textContent='Enter a name';return;}
-  if(categories.find(c=>c.name.toLowerCase()===name.toLowerCase())){err.textContent='Already exists!';return;}
-  categories.push({name,color});saveCache();
-  if(sb&&user&&user.id!=='local') await pushCats();
-  document.getElementById('ncName').value='';
-  populateDDs();buildChips();renderCats();closeAddCat();toast('Category added','ok');
+function openCatSh()  { document.getElementById('catErr').textContent=''; document.getElementById('catSh').classList.add('open'); }
+function closeCatSh() { document.getElementById('catSh').classList.remove('open'); }
+
+async function addCat() {
+  const name  = document.getElementById('ncName').value.trim();
+  const color = document.getElementById('ncCol').value;
+  if (!name) { document.getElementById('catErr').textContent = 'Enter a name'; return; }
+  if (categories.find(c => c.name.toLowerCase() === name.toLowerCase())) { document.getElementById('catErr').textContent = 'Already exists!'; return; }
+  categories.push({ name, color }); saveCache();
+  if (sb && user && user.id !== 'local') await pushCats();
+  document.getElementById('ncName').value = '';
+  populateDDs(); buildChips(); renderCats(); closeCatSh(); toast('Category added', 'ok');
 }
-async function renCat(i,n){
-  n=n.trim();
-  if(!n||categories.find((c,j)=>j!==i&&c.name.toLowerCase()===n.toLowerCase()))return;
-  const old=categories[i].name;
-  expenses=expenses.map(e=>e.cat===old?{...e,cat:n}:e);
-  categories[i].name=n;saveCache();
-  if(sb&&user&&user.id!=='local'){await pushCats();await sb.from('expenses').update({cat:n}).eq('cat',old).eq('user_id',user.id);}
-  populateDDs();buildChips();toast('Renamed','ok');renderDash();
+async function renCat(i, n) {
+  n = n.trim();
+  if (!n || categories.find((c, j) => j !== i && c.name.toLowerCase() === n.toLowerCase())) { renderCats(); return; }
+  const old = categories[i].name;
+  expenses = expenses.map(e => e.cat === old ? { ...e, cat: n } : e);
+  categories[i].name = n; saveCache();
+  if (sb && user && user.id !== 'local') {
+    await pushCats();
+    await sb.from('expenses').update({ cat: n }).eq('cat', old).eq('user_id', user.id);
+  }
+  populateDDs(); buildChips(); toast('Renamed', 'ok'); renderDash();
 }
-async function delCat(i){
-  if(categories.length<=1){toast('Keep at least one','err');return;}
-  const cat=categories[i];
-  const used=expenses.filter(e=>e.cat===cat.name).length;
-  const fb=categories.find((_,j)=>j!==i).name;
-  if(used>0&&!confirm(`"${cat.name}" used in ${used} record(s). Move to "${fb}"?`))return;
-  expenses=expenses.map(e=>e.cat===cat.name?{...e,cat:fb}:e);
-  categories.splice(i,1);saveCache();
-  if(sb&&user&&user.id!=='local'){await pushCats();await sb.from('expenses').update({cat:fb}).eq('cat',cat.name).eq('user_id',user.id);}
-  populateDDs();buildChips();renderCats();toast('Removed','ok');renderDash();
+async function delCat(i) {
+  if (categories.length <= 1) { toast('Keep at least one category', 'err'); return; }
+  const cat = categories[i];
+  const used = expenses.filter(e => e.cat === cat.name).length;
+  const fb   = categories.find((_, j) => j !== i).name;
+  if (used > 0 && !confirm(`"${cat.name}" used in ${used} expense(s). Move them to "${fb}"?`)) return;
+  expenses = expenses.map(e => e.cat === cat.name ? { ...e, cat: fb } : e);
+  categories.splice(i, 1); saveCache();
+  if (sb && user && user.id !== 'local') {
+    await pushCats();
+    if (used > 0) await sb.from('expenses').update({ cat: fb }).eq('cat', cat.name).eq('user_id', user.id);
+  }
+  populateDDs(); buildChips(); renderCats(); toast('Removed', 'ok'); renderDash();
 }
-async function chgCatClr(i,clr){
-  categories[i].color=clr;saveCache();
-  if(sb&&user&&user.id!=='local') await pushCats();
-  renderCats();renderDash();
+async function chgClr(i, clr) {
+  categories[i].color = clr; saveCache();
+  if (sb && user && user.id !== 'local') await pushCats();
+  renderCats(); renderDash();
 }
 
-// ═══ EXPORT ═══
-function expCSV(){
-  const f=getF();if(!f.length){toast('No data','err');return;}
-  const rows=[['Date','Description','Category','Amount','Note'],...f.map(e=>[e.date,`"${e.name}"`,e.cat,e.amt,`"${e.note||''}"`])];
-  const blob=new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`expenses_${new Date().toISOString().split('T')[0]}.csv`;a.click();
-  toast('CSV downloaded','ok');
+// ══════════ EXPORT ══════════
+function expCSV() {
+  const f = getFiltered(); if (!f.length) { toast('No data to export', 'err'); return; }
+  const rows = [['Date','Description','Category','Amount','Note'], ...f.map(e => [e.date, `"${e.name}"`, e.cat, e.amt, `"${e.note||''}"`])];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([rows.map(r => r.join(',')).join('\n')], { type: 'text/csv' }));
+  a.download = `expenses_${today()}.csv`; a.click(); toast('CSV downloaded', 'ok');
 }
-function expPDF(){
-  const f=getF();if(!f.length){toast('No data','err');return;}
-  const {jsPDF}=window.jspdf;const doc=new jsPDF();
-  doc.setFillColor(15,17,23);doc.rect(0,0,210,297,'F');
-  doc.setTextColor(200,205,220);doc.setFontSize(16);doc.setFont(undefined,'bold');doc.text('Expense Report',14,18);
-  doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(120,130,160);
-  doc.text(`User: ${user?.email||'Local'} | ${new Date().toLocaleDateString('en-IN')}`,14,27);
-  const tot=f.reduce((s,e)=>s+Number(e.amt),0);
-  doc.setFontSize(10);doc.setTextColor(200,205,220);doc.text(`Total: ₹${tot.toLocaleString('en-IN')} | Records: ${f.length}`,14,35);
-  doc.autoTable({startY:42,head:[['Date','Description','Category','Amount','Note']],
-    body:f.map(e=>[fd(e.date),e.name,e.cat,'₹'+Number(e.amt).toLocaleString('en-IN'),e.note||'']),
+function expPDF() {
+  const f = getFiltered(); if (!f.length) { toast('No data to export', 'err'); return; }
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(15,17,23); doc.rect(0,0,210,297,'F');
+  doc.setTextColor(200,205,220); doc.setFontSize(16); doc.setFont(undefined,'bold');
+  doc.text('Expense Report', 14, 18);
+  doc.setFontSize(9); doc.setFont(undefined,'normal'); doc.setTextColor(120,130,160);
+  doc.text(`User: ${user?.email||'Local'} | ${new Date().toLocaleDateString('en-IN')}`, 14, 27);
+  const tot = f.reduce((s,e)=>s+Number(e.amt),0);
+  doc.setFontSize(10); doc.setTextColor(200,205,220);
+  doc.text(`Total: ₹${tot.toLocaleString('en-IN')} | Records: ${f.length}`, 14, 36);
+  doc.autoTable({ startY:43,
+    head:[['Date','Description','Category','Amount','Note']],
+    body: f.map(e=>[fd(e.date),e.name,e.cat,'₹'+Number(e.amt).toLocaleString('en-IN'),e.note||'']),
     styles:{fillColor:[26,29,39],textColor:[200,205,220],fontSize:8.5,cellPadding:4},
     headStyles:{fillColor:[108,99,255],textColor:[255,255,255],fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[33,37,58]},columnStyles:{3:{halign:'right'}}});
-  doc.setTextColor(160,155,255);doc.setFontSize(11);doc.setFont(undefined,'bold');
-  doc.text(`Grand Total: ₹${tot.toLocaleString('en-IN')}`,14,doc.lastAutoTable.finalY+10);
-  doc.save(`expense_report_${new Date().toISOString().split('T')[0]}.pdf`);
-  toast('PDF downloaded','ok');
+    alternateRowStyles:{fillColor:[33,37,58]}, columnStyles:{3:{halign:'right'}}
+  });
+  doc.setTextColor(160,155,255); doc.setFontSize(11); doc.setFont(undefined,'bold');
+  doc.text(`Grand Total: ₹${tot.toLocaleString('en-IN')}`, 14, doc.lastAutoTable.finalY+10);
+  doc.save(`expense_report_${today()}.pdf`); toast('PDF downloaded', 'ok');
 }
-function expJSON(){
-  const blob=new Blob([JSON.stringify({expenses,categories,user:user?.email,exported:new Date().toISOString()},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`backup_${new Date().toISOString().split('T')[0]}.json`;a.click();
-  toast('Backup downloaded','ok');
+function expJSON() {
+  const blob = new Blob([JSON.stringify({expenses,categories,user:user?.email,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `backup_${today()}.json`; a.click(); toast('Backup downloaded', 'ok');
 }
-async function impJSON(evt){
-  const file=evt.target.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=async e=>{
-    try{
-      const d=JSON.parse(e.target.result);
-      if(!d.expenses||!d.categories){toast('Invalid file','err');return;}
-      if(!confirm(`Import ${d.expenses.length} expenses?`))return;
-      expenses=d.expenses;categories=d.categories;saveCache();
-      if(sb&&user&&user.id!=='local'){
-        toast('Uploading…','info');
-        await sb.from('expenses').delete().eq('user_id',user.id);
-        if(expenses.length) await sb.from('expenses').insert(expenses.map(({name,amt,cat,date,note})=>({name,amt,cat,date,note,user_id:user.id})));
+async function impJSON(evt) {
+  const file = evt.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = async e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (!d.expenses || !d.categories) { toast('Invalid file', 'err'); return; }
+      if (!confirm(`Import ${d.expenses.length} expenses? This replaces current data.`)) return;
+      expenses = d.expenses; categories = d.categories; saveCache();
+      if (sb && user && user.id !== 'local') {
+        toast('Uploading to cloud…', 'info');
+        await sb.from('expenses').delete().eq('user_id', user.id);
+        if (expenses.length) {
+          await sb.from('expenses').insert(expenses.map(({name,amt,cat,date,note})=>({name,amt,cat,date,note,user_id:user.id})));
+        }
         await pushCats();
       }
-      populateDDs();buildChips();renderDash();renderExp();renderCats();
-      toast(`Imported ${expenses.length} expenses ✅`,'ok');
-    }catch{toast('Failed to read file','err');}
+      populateDDs(); buildChips(); renderDash(); renderExp(); renderCats();
+      toast(`Imported ${expenses.length} expenses ✅`, 'ok');
+    } catch { toast('Failed to read file', 'err'); }
   };
-  r.readAsText(file);evt.target.value='';
+  r.readAsText(file); evt.target.value = '';
 }
-async function resetAll(){
-  if(!confirm('Delete ALL data? Cannot be undone.'))return;
-  expenses=[];categories=[...DEF_CATS.map(c=>({...c}))];saveCache();
-  if(sb&&user&&user.id!=='local'){await sb.from('expenses').delete().eq('user_id',user.id);await pushCats();}
-  populateDDs();buildChips();renderDash();renderExp();renderCats();toast('Cleared','ok');
-}
-
-// ═══ PWA SERVICE WORKER ═══
-if('serviceWorker' in navigator){
-  const sw=`
-    const CACHE='exp-v1';
-    const ASSETS=['/'];
-    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
-    self.addEventListener('fetch',e=>e.respondWith(
-      caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
-        if(res.status===200){const c=res.clone();caches.open(CACHE).then(ca=>ca.put(e.request,c));}
-        return res;
-      }).catch(()=>caches.match('/'))
-    ));
-  `;
-  const blob=new Blob([sw],{type:'text/javascript'});
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+async function resetAll() {
+  if (!confirm('Delete ALL your expenses permanently? This cannot be undone.')) return;
+  expenses = []; categories = DEF_CATS.map(c=>({...c})); saveCache();
+  if (sb && user && user.id !== 'local') {
+    await sb.from('expenses').delete().eq('user_id', user.id);
+    await pushCats();
+  }
+  populateDDs(); buildChips(); renderDash(); renderExp(); renderCats(); toast('All data cleared', 'ok');
 }
 </script>
 </body>
