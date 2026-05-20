@@ -7,7 +7,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f1117">
-<link rel="manifest" href="manifest.json">
 <title>Expense Tracker</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -23,17 +22,9 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .auth-logo p{font-size:.76rem;color:var(--muted);margin-top:3px}
 .auth-version-pill{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:4px 11px;margin-top:8px;font-size:.67rem;font-weight:700;color:var(--muted)}
 .vdot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 5px var(--green)}
-
-/* Auth method row */
-.auth-methods{display:flex;gap:4px;background:var(--card2);border-radius:10px;padding:3px;margin-bottom:14px}
-.am{flex:1;padding:9px;text-align:center;font-size:.85rem;font-weight:700;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:none;font-family:inherit}
-.am.on{background:var(--accent);color:#fff}
-
-/* Sign-in type tabs (login/signup) */
 .atabs{display:flex;gap:4px;background:var(--card2);border-radius:10px;padding:3px;margin-bottom:14px}
 .atab{flex:1;padding:9px;text-align:center;font-size:.85rem;font-weight:700;border-radius:8px;cursor:pointer;color:var(--muted);transition:all .2s;border:none;background:none;font-family:inherit}
 .atab.on{background:var(--card);color:var(--text);box-shadow:0 1px 4px #0004}
-
 .fi{margin-bottom:11px}
 .fi label{display:block;font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px}
 .fi input,.fi select,.fi textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;padding:12px 13px;color:var(--text);font-size:.95rem;outline:none;transition:border-color .2s;font-family:inherit;-webkit-appearance:none;appearance:none;display:block}
@@ -44,26 +35,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,#6c63ff,#3b82f6);border:none;border-radius:10px;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;transition:opacity .2s;display:block;margin-top:4px;font-family:inherit}
 .btn-primary:active{opacity:.78}
 .btn-primary:disabled{opacity:.45;cursor:not-allowed}
-
-/* OTP steps */
-.otp-info{background:var(--card2);border-radius:9px;padding:10px 13px;font-size:.8rem;color:var(--muted);margin-bottom:11px;line-height:1.5}
-.otp-info b{color:var(--text)}
-.btn-back{background:none;border:none;color:var(--accent);font-size:.8rem;font-weight:700;cursor:pointer;padding:8px 0;display:block;text-align:center;font-family:inherit;margin-top:6px}
-
-/* Divider */
-.or-div{display:flex;align-items:center;gap:10px;margin:14px 0}
+.or-div{display:flex;align-items:center;gap:10px;margin:13px 0}
 .or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--border)}
-.or-div span{font-size:.72rem;color:var(--muted);font-weight:600;white-space:nowrap}
-
-/* Google OAuth btn */
+.or-div span{font-size:.72rem;color:var(--muted);font-weight:600}
 .btn-google{width:100%;padding:12px;background:var(--card2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;font-family:inherit}
 .btn-google:hover{border-color:#4285f4;background:#4285f408}
 .btn-google:active{opacity:.8}
-.btn-google svg{flex-shrink:0}
-
+.btn-google:disabled{opacity:.5;cursor:not-allowed}
 .auth-err{color:var(--red);font-size:.77rem;margin-top:8px;text-align:center;min-height:15px}
 .auth-note{text-align:center;font-size:.75rem;color:var(--muted);margin-top:8px;line-height:1.5}
-.auth-warn{background:#f59e0b14;border:1px solid #f59e0b33;border-radius:8px;padding:9px 12px;font-size:.75rem;color:#b45309;margin-top:10px;line-height:1.5}
 
 /* ── APP ── */
 #app{display:none;height:100%;overflow:hidden}
@@ -82,7 +62,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .p-sy{background:#3b82f615;color:#3b82f6;border-color:#3b82f644}
 .p-er{background:#ef444415;color:#ef4444;border-color:#ef444444}
 
-/* ── PERIOD TABS ── */
+/* ── PERIOD ── */
 .ptabs{display:flex;gap:6px;padding:10px 12px 2px;overflow-x:auto;scrollbar-width:none}
 .ptabs::-webkit-scrollbar{display:none}
 .ptab{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:.76rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .18s;font-family:inherit}
@@ -197,7 +177,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .sh-ftr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 
 /* ── PROFILE ── */
-.pav{width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,#6c63ff,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;margin:0 auto 8px;color:#fff}
+.pav{width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,#6c63ff,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;margin:0 auto 8px;color:#fff;overflow:hidden}
+.pav img{width:100%;height:100%;object-fit:cover;border-radius:32px}
 .sr{display:flex;align-items:center;justify-content:space-between;padding:12px 13px}
 .sr+.sr{border-top:1px solid var(--border)}
 .sr-l{font-size:.87rem;font-weight:600}
@@ -255,13 +236,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .sum-lbl{font-size:.78rem;color:var(--muted)}
 .sum-val{font-size:.88rem;font-weight:800}
 
-/* ── EMPTY ── */
+/* ── EMPTY / LOADING ── */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 18px;color:var(--muted);gap:6px;text-align:center}
 .empty .ico{font-size:2.2rem;margin-bottom:4px;opacity:.6}
 .empty p{font-size:.82rem}
 .bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.67rem;font-weight:700}
+.spin{width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .6s linear infinite;margin:0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
 
-/* ── TOAST — auto-dismiss, never sticky ── */
+/* ── TOAST ── */
 .toast{position:fixed;top:calc(var(--sat)+12px);left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 18px;font-size:.83rem;color:var(--text);z-index:1000;transition:transform .28s cubic-bezier(.34,1.56,.64,1),opacity .28s;white-space:nowrap;box-shadow:0 8px 28px #00000088;max-width:88vw;overflow:hidden;text-overflow:ellipsis;opacity:0;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.ok{border-left:3px solid var(--green)}.toast.err{border-left:3px solid var(--red)}.toast.info{border-left:3px solid var(--blue)}
@@ -292,10 +275,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <h2>Expense Tracker</h2>
       <p>Track smarter · Spend wiser</p>
       <div style="display:flex;justify-content:center">
-        <div class="auth-version-pill"><span class="vdot"></span><span id="authVerLabel">v2.0 Advanced Edition</span></div>
+        <div class="auth-version-pill"><span class="vdot"></span>v2.1 · Firebase Edition</div>
       </div>
     </div>
-
     <div class="atabs">
       <button class="atab on" id="atL" onclick="setMode('login')">Sign In</button>
       <button class="atab"   id="atS" onclick="setMode('signup')">Sign Up</button>
@@ -308,12 +290,21 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <button class="btn-primary" id="aBtn" onclick="doAuth()">Sign In</button>
     <div class="auth-err" id="aErr"></div>
     <div class="auth-note" id="aNote"></div>
+    <div class="or-div"><span>or</span></div>
+    <button class="btn-google" id="gBtn" onclick="signInGoogle()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+        <path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+        <path d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
   </div>
 </div>
 
 <!-- ══════ APP ══════ -->
 <div id="app">
-
   <!-- DASHBOARD -->
   <div class="screen active" id="s0">
     <div class="hdr">
@@ -321,7 +312,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <div class="hdr-right">
         <span style="font-size:.62rem;color:var(--muted)" id="syncTime"></span>
         <span class="pill p-lo" id="pill">💾 Local</span>
-        <button class="hdr-help" onclick="openHelp()" title="Help">?</button>
+        <button class="hdr-help" onclick="openHelp()">?</button>
       </div>
     </div>
     <div class="ptabs">
@@ -400,12 +391,9 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <div style="height:10px"></div>
   </div>
 
-  <!-- PROFILE — no FAB here -->
+  <!-- PROFILE -->
   <div class="screen" id="s3">
-    <div class="hdr">
-      <h1>👤 Profile</h1>
-      <button class="hdr-help" onclick="openHelp('about')">?</button>
-    </div>
+    <div class="hdr"><h1>👤 Profile</h1><button class="hdr-help" onclick="openHelp('about')">?</button></div>
     <div class="pnl">
       <div style="text-align:center;padding:18px 13px">
         <div class="pav" id="pavEl">?</div>
@@ -433,7 +421,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <div class="pnl">
       <div class="sr" style="cursor:pointer" onclick="openHelp('about')"><div><div class="sr-l">📖 About This App</div><div class="sr-s">Version info, tech stack, credits</div></div><span style="color:var(--muted)">›</span></div>
       <div class="sr" style="cursor:pointer" onclick="openHelp('features')"><div><div class="sr-l">✨ Features Guide</div><div class="sr-s">What every feature does</div></div><span style="color:var(--muted)">›</span></div>
-      <div class="sr" style="cursor:pointer" onclick="openHelp('setup')"><div><div class="sr-l">⚙ Setup & Config</div><div class="sr-s">Supabase, hosting, PWA install</div></div><span style="color:var(--muted)">›</span></div>
+      <div class="sr" style="cursor:pointer" onclick="openHelp('setup')"><div><div class="sr-l">⚙ Setup & Config</div><div class="sr-s">Firebase setup, hosting, PWA</div></div><span style="color:var(--muted)">›</span></div>
       <div class="sr" style="cursor:pointer" onclick="openHelp('trouble')"><div><div class="sr-l">🔧 Troubleshooting</div><div class="sr-s">Common problems & fixes</div></div><span style="color:var(--muted)">›</span></div>
       <div class="sr" style="cursor:pointer" onclick="openHelp('changelog')"><div><div class="sr-l">📋 Changelog</div><div class="sr-s">What's new in each version</div></div><span style="color:var(--muted)">›</span></div>
     </div>
@@ -445,23 +433,19 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
     <div style="height:24px"></div>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bnav">
     <button class="ni on" id="n0" onclick="goNav(0)"><span class="ni-i">📊</span>Dashboard</button>
     <button class="ni"    id="n1" onclick="goNav(1)"><span class="ni-i">🧾</span>Expenses</button>
     <button class="ni"    id="n2" onclick="goNav(2)"><span class="ni-i">🏷</span>Categories</button>
     <button class="ni"    id="n3" onclick="goNav(3)"><span class="ni-i">👤</span>Profile</button>
   </nav>
-
-  <!-- FAB — only on Dashboard & Expenses -->
-  <button class="fab" id="fabBtn" onclick="openAddSh()">+</button>
+  <button class="fab hidden" id="fabBtn" onclick="openAddSh()">+</button>
 </div>
 
-<!-- ADD EXPENSE SHEET -->
+<!-- ADD EXPENSE -->
 <div class="sov" id="addSh" onclick="if(event.target===this)closeAddSh()">
   <div class="sh">
-    <div class="sh-hdl"></div>
-    <h2>➕ Add Expense</h2>
+    <div class="sh-hdl"></div><h2>➕ Add Expense</h2>
     <div class="fi"><label>Description *</label><input type="text" id="eName" placeholder="e.g. Grocery"></div>
     <div class="fi-row">
       <div class="fi"><label>Amount (₹) *</label><input type="number" id="eAmt" placeholder="0" min="0" inputmode="decimal"></div>
@@ -473,11 +457,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
-<!-- EDIT SHEET -->
+<!-- EDIT EXPENSE -->
 <div class="sov" id="editSh" onclick="if(event.target===this)closeEditSh()">
   <div class="sh">
-    <div class="sh-hdl"></div>
-    <h2>✏️ Edit Expense</h2>
+    <div class="sh-hdl"></div><h2>✏️ Edit Expense</h2>
     <input type="hidden" id="eId">
     <div class="fi"><label>Description</label><input type="text" id="edName"></div>
     <div class="fi-row">
@@ -493,11 +476,10 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
   </div>
 </div>
 
-<!-- ADD CATEGORY SHEET -->
+<!-- ADD CATEGORY -->
 <div class="sov" id="catSh" onclick="if(event.target===this)closeCatSh()">
   <div class="sh">
-    <div class="sh-hdl"></div>
-    <h2>🏷 New Category</h2>
+    <div class="sh-hdl"></div><h2>🏷 New Category</h2>
     <div class="fi"><label>Name</label><input type="text" id="ncName" placeholder="e.g. Gym" maxlength="28"></div>
     <div class="fi"><label>Colour</label><input type="color" id="ncCol" value="#6c63ff" style="height:44px;border-radius:10px;cursor:pointer"></div>
     <div class="fi"><label>Monthly Budget (₹, optional)</label><input type="number" id="ncBudget" placeholder="0 = no limit" min="0" inputmode="decimal"></div>
@@ -524,14 +506,13 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       </div>
     </div>
     <div class="help-body">
-      <!-- ABOUT -->
       <div class="help-section on" id="ht-about">
         <div class="hd-cover">
           <span class="app-ico">💰</span>
           <h3>Expense Tracker</h3>
-          <p>Full-featured personal finance PWA with cloud sync, multi-auth, and budget management.</p>
+          <p>Full-featured personal finance PWA powered by Firebase with Google Sign-In and real-time sync.</p>
           <div class="ver-tags">
-            <span class="vtag">v2.0 Advanced Edition</span>
+            <span class="vtag">v2.1 Firebase Edition</span>
             <span class="vtag">Build: May 2026</span>
             <span class="vtag">PWA Ready</span>
           </div>
@@ -539,124 +520,110 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
         <div class="hd-sub">Version Details</div>
         <div class="vcard">
           <div style="display:flex;flex-direction:column;gap:6px">
-            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Version</span><strong>v2.0 Advanced Edition</strong></div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Release</span><span>May 2026</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Version</span><strong>v2.1 Firebase Edition</strong></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Backend</span><span>Firebase (Firestore + Auth)</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Auth</span><span>Email/Password + Google Sign-In</span></div>
             <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Platform</span><span>Web PWA + Android</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Backend</span><span>Supabase PostgreSQL</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:var(--muted)">Auth</span><span>Email · Phone OTP · Google OAuth</span></div>
           </div>
         </div>
         <div class="hd-sub">Tech Stack</div>
         <div class="vcard">
-          <div class="feat-row"><div class="feat-ico">🌐</div><div class="feat-body"><strong>HTML5 + CSS3 + Vanilla JS</strong><span>Single index.html — no build tools required.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">🗄</div><div class="feat-body"><strong>Supabase (PostgreSQL)</strong><span>Free cloud DB with auth, RLS, and REST API.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">🌐</div><div class="feat-body"><strong>HTML5 + CSS3 + Vanilla JS</strong><span>Single file — no build tools needed.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">🔥</div><div class="feat-body"><strong>Firebase Firestore</strong><span>NoSQL cloud database. Data stored under users/{uid}/expenses and users/{uid}/categories.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">🔐</div><div class="feat-body"><strong>Firebase Auth</strong><span>Email/Password and Google OAuth. Security Rules enforce per-user data isolation.</span></div></div>
           <div class="feat-row"><div class="feat-ico">📊</div><div class="feat-body"><strong>Chart.js v4.4</strong><span>Donut and bar charts.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">📄</div><div class="feat-body"><strong>jsPDF + AutoTable</strong><span>Dark-themed PDF export.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">📱</div><div class="feat-body"><strong>PWA</strong><span>Installable on Android. Full-screen, no browser bar. Works on Nothing Phone.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">📄</div><div class="feat-body"><strong>jsPDF + AutoTable</strong><span>Dark-themed PDF expense reports.</span></div></div>
         </div>
       </div>
-      <!-- FEATURES -->
       <div class="help-section" id="ht-features">
         <div class="hd-sub">Authentication</div>
         <div class="vcard">
-          <div class="feat-row"><div class="feat-ico">✉️</div><div class="feat-body"><strong>Email + Password</strong><span>Classic login/signup. Each user's data is completely private.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">📱</div><div class="feat-body"><strong>Phone OTP</strong><span>Enter your number, receive a 6-digit SMS code, verify instantly. No password needed. Requires Twilio in Supabase.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">🔵</div><div class="feat-body"><strong>Google OAuth</strong><span>One-tap sign in with your Google account. Requires Google provider enabled in Supabase.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">✉️</div><div class="feat-body"><strong>Email + Password</strong><span>Classic sign in. Each user's data is completely isolated in Firestore.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">🔵</div><div class="feat-body"><strong>Google Sign-In</strong><span>One tap — uses your Google account. No password to remember. Native Firebase integration.</span></div></div>
         </div>
-        <div class="hd-sub">Dashboard</div>
+        <div class="hd-sub">Core Features</div>
         <div class="vcard">
+          <div class="feat-row"><div class="feat-ico">☁️</div><div class="feat-body"><strong>Cloud Sync</strong><span>Data stored in Firestore. Load on any browser, any device, any time.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">💾</div><div class="feat-body"><strong>Local Cache</strong><span>localStorage for instant load — no waiting for the cloud on every open.</span></div></div>
           <div class="feat-row"><div class="feat-ico">📅</div><div class="feat-body"><strong>Period Filter</strong><span>This Month / Last Month / 3 Months / This Year / All Time.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">📈</div><div class="feat-body"><strong>Insights Row</strong><span>% change vs last month, avg/day, biggest single expense.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">💰</div><div class="feat-body"><strong>Budget Overview</strong><span>Progress bars per category. Always visible. Shows prompt if no budgets set.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">💰</div><div class="feat-body"><strong>Budget Tracking</strong><span>Set a monthly ₹ limit per category. Progress bars + alerts at 80% and 100%.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">🔍</div><div class="feat-body"><strong>Live Search</strong><span>Searches name, category, and note with match highlighting.</span></div></div>
+          <div class="feat-row"><div class="feat-ico">📄</div><div class="feat-body"><strong>Export CSV / PDF</strong><span>Download filtered expenses as a spreadsheet or formatted report.</span></div></div>
         </div>
-        <div class="hd-sub">Expenses</div>
-        <div class="vcard">
-          <div class="feat-row"><div class="feat-ico">🔍</div><div class="feat-body"><strong>Live Search</strong><span>Searches name, category, and note. Results highlight matches.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">🏷</div><div class="feat-body"><strong>Category Chips</strong><span>Tap to filter by category instantly.</span></div></div>
-          <div class="feat-row"><div class="feat-ico">📄</div><div class="feat-body"><strong>Export CSV / PDF</strong><span>Downloads filtered results. PDF includes dark styling and grand total.</span></div></div>
-        </div>
-        <div style="height:10px"></div>
       </div>
-      <!-- SETUP -->
       <div class="help-section" id="ht-setup">
-        <div class="hd-sub">Step 1 — Supabase SQL</div>
-        <div class="hd-p">Go to supabase.com → SQL Editor → paste and run:</div>
-        <div class="code-pill">create table if not exists expenses (
-  id bigint primary key generated always as identity,
-  user_id uuid references auth.users(id) on delete cascade,
-  name text not null, amt numeric not null,
-  cat text not null, date text not null,
-  note text default '', created_at timestamptz default now()
-);
-create table if not exists categories (
-  id bigint primary key generated always as identity,
-  user_id uuid references auth.users(id) on delete cascade,
-  name text not null, color text not null, budget numeric default 0
-);
-alter table expenses   enable row level security;
-alter table categories enable row level security;
-create policy "own_exp" on expenses for all to authenticated
-  using (auth.uid()=user_id) with check (auth.uid()=user_id);
-create policy "own_cats" on categories for all to authenticated
-  using (auth.uid()=user_id) with check (auth.uid()=user_id);</div>
-        <div class="hd-sub">Step 2 — Enable Google OAuth</div>
-        <div class="hd-step"><div class="hd-snum">1</div><div class="hd-sbody"><strong>Supabase → Auth → Providers → Google</strong><span>Enable it. Copy the Callback URL shown.</span></div></div>
-        <div class="hd-step"><div class="hd-snum">2</div><div class="hd-sbody"><strong>Google Cloud Console</strong><span>Create OAuth 2.0 credentials → paste the Callback URL as an Authorized Redirect URI. Copy Client ID and Secret back to Supabase.</span></div></div>
-        <div class="hd-sub">Step 3 — Enable Phone OTP</div>
-        <div class="hd-step"><div class="hd-snum">3</div><div class="hd-sbody"><strong>Supabase → Auth → Providers → Phone</strong><span>Enable it. Add Twilio Account SID, Auth Token, and a Twilio phone number. Save.</span></div></div>
-        <div class="hd-sub">Step 4 — Paste Credentials</div>
-        <div class="code-pill">const SB_URL = 'https://xxxx.supabase.co';
-const SB_KEY = 'eyJhbGci...';</div>
-        <div class="hd-sub">Step 5 — GitHub Pages Hosting</div>
-        <div class="hd-step"><div class="hd-snum">4</div><div class="hd-sbody"><strong>Create repo & upload index.html</strong><span>Settings → Pages → main branch → Save. Live at yourusername.github.io/expense-tracker/</span></div></div>
+        <div class="hd-sub">Step 1 — Create Firebase Project</div>
+        <div class="hd-step"><div class="hd-snum">1</div><div class="hd-sbody"><strong>Go to console.firebase.google.com</strong><span>Click "Add project" → give it a name → Continue → Create project.</span></div></div>
+        <div class="hd-step"><div class="hd-snum">2</div><div class="hd-sbody"><strong>Enable Authentication</strong><span>Build → Authentication → Get started → Email/Password → Enable → Save. Then Providers → Google → Enable → Save.</span></div></div>
+        <div class="hd-step"><div class="hd-snum">3</div><div class="hd-sbody"><strong>Enable Firestore</strong><span>Build → Firestore Database → Create database → Production mode → Choose region → Done.</span></div></div>
+        <div class="hd-sub">Step 2 — Firestore Security Rules</div>
+        <div class="hd-p">In Firestore → Rules tab, replace everything with:</div>
+        <div class="code-pill">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == userId;
+    }
+  }
+}</div>
+        <div class="hd-sub">Step 3 — Get Config & Paste</div>
+        <div class="hd-step"><div class="hd-snum">4</div><div class="hd-sbody"><strong>Project Settings → General → Your apps → Add web app</strong><span>Copy the firebaseConfig object. Paste it into the CONFIG section at the top of index.html.</span></div></div>
+        <div class="code-pill">const firebaseConfig = {
+  apiKey:            "AIzaSy...",
+  authDomain:        "your-app.firebaseapp.com",
+  projectId:         "your-app-id",
+  storageBucket:     "your-app.appspot.com",
+  messagingSenderId: "123456789",
+  appId:             "1:123:web:abc123"
+};</div>
+        <div class="hd-sub">Step 4 — Deploy to GitHub Pages</div>
+        <div class="hd-step"><div class="hd-snum">5</div><div class="hd-sbody"><strong>Add your domain to Firebase Auth</strong><span>Authentication → Settings → Authorized domains → Add your GitHub Pages domain (e.g. username.github.io).</span></div></div>
+        <div class="hd-step"><div class="hd-snum">6</div><div class="hd-sbody"><strong>Upload to GitHub & enable Pages</strong><span>Settings → Pages → main branch → Save. Live at username.github.io/expense-tracker/</span></div></div>
         <div style="height:10px"></div>
       </div>
-      <!-- TROUBLE -->
       <div class="help-section" id="ht-trouble">
         <div class="hd-sub">Common Issues</div>
         <div class="vcard">
-          <div class="trouble-row"><div class="trouble-q">⚠ Toast notification stays on screen</div><div class="trouble-a">Fixed in v2.0 — toast auto-dismisses after 1.8 seconds and uses opacity transitions so it never gets stuck.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ + button overlapping Sign Out / profile content</div><div class="trouble-a">Fixed in v2.0 — the FAB (+) button only appears on Dashboard and Expenses tabs. It is completely hidden on Categories and Profile.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ Google sign-in not working</div><div class="trouble-a">Enable the Google provider in Supabase → Auth → Providers → Google, and add your OAuth credentials from Google Cloud Console.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ Phone OTP not receiving SMS</div><div class="trouble-a">Requires Twilio configured in Supabase → Auth → Providers → Phone. The app warns you if not set up.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ Data not syncing on another browser</div><div class="trouble-a">Make sure the RLS SQL was run. Sign in with the same account. Check the ☁ Synced badge in the header.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ Budget overview not showing</div><div class="trouble-a">Go to 🏷 Categories → enter a ₹ amount in the budget field. The section always shows and prompts you if empty.</div></div>
-          <div class="trouble-row"><div class="trouble-q">⚠ budget column missing error</div><div class="trouble-a">Run: <code>alter table categories add column if not exists budget numeric default 0;</code></div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ Google Sign-In popup blocked</div><div class="trouble-a">Make sure your domain is added in Firebase → Authentication → Settings → Authorized domains. On mobile, popups may be blocked — the app falls back to redirect automatically.</div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ "Permission denied" on Firestore</div><div class="trouble-a">Your Security Rules may be incorrect. Go to Firestore → Rules and paste the rules from the Setup tab above.</div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ Data not loading on another device</div><div class="trouble-a">Make sure you're signed in with the same account. Tap the sync icon or reopen the app — Firestore loads fresh data on every login.</div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ Budget overview empty</div><div class="trouble-a">Go to 🏷 Categories → enter a ₹ amount in the budget field next to any category.</div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ App not installable as PWA</div><div class="trouble-a">Make sure manifest.json is in the repo and the link tag is in &lt;head&gt;. GitHub Pages uses HTTPS which is required for PWA install.</div></div>
+          <div class="trouble-row"><div class="trouble-q">⚠ authDomain error after deploy</div><div class="trouble-a">Add your GitHub Pages URL to Firebase Console → Authentication → Settings → Authorized domains.</div></div>
         </div>
         <div style="height:10px"></div>
       </div>
-      <!-- CHANGELOG -->
       <div class="help-section" id="ht-changelog">
         <div class="hd-sub">Version History</div>
         <div class="changelog-item">
-          <div class="cl-ver"><span class="cl-badge cl-current">v2.0 Current</span><span class="cl-date">May 2026</span></div>
+          <div class="cl-ver"><span class="cl-badge cl-current">v2.1 Current</span><span class="cl-date">May 2026</span></div>
           <ul class="cl-list">
-            <li>Google OAuth sign-in added</li>
-            <li>Phone number + OTP SMS authentication added</li>
-            <li>Fixed: toast auto-dismisses after 1.8s, never stays stuck</li>
-            <li>Fixed: FAB (+) hidden on Categories and Profile tabs</li>
-            <li>Help & About built into the app</li>
-            <li>Version badge on login screen and profile</li>
-            <li>Period filter tabs on Dashboard</li>
-            <li>Budget tracking with alerts at 80% and 100%</li>
-            <li>Live search with match highlighting</li>
+            <li>Migrated from Supabase to Firebase</li>
+            <li>Google Sign-In — one-tap auth via Firebase Auth</li>
+            <li>Firestore as database — real NoSQL cloud storage</li>
+            <li>Security Rules for per-user data isolation</li>
+            <li>Google profile photo shown in Profile tab</li>
+            <li>Display name pulled from Google account</li>
+            <li>Toast auto-dismisses after 1.8s — never sticky</li>
+            <li>FAB hidden on Categories and Profile tabs</li>
           </ul>
         </div>
         <div class="changelog-item">
-          <div class="cl-ver"><span class="cl-badge cl-old">v1.5</span><span class="cl-date">April 2026</span></div>
+          <div class="cl-ver"><span class="cl-badge cl-old">v2.0</span><span class="cl-date">April 2026</span></div>
           <ul class="cl-list">
-            <li>Fixed auth buttons staying disabled after logout</li>
-            <li>Per-user localStorage cache keys</li>
-            <li>onAuthStateChange for reliable session tracking</li>
-            <li>Cloud sync badge with timestamp</li>
+            <li>Help & About section built into the app</li>
+            <li>Period filter tabs on Dashboard</li>
+            <li>Budget tracking with progress bars and alerts</li>
+            <li>Live search with match highlighting</li>
+            <li>Profile stats: all-time total, member since</li>
           </ul>
         </div>
         <div class="changelog-item">
           <div class="cl-ver"><span class="cl-badge cl-old">v1.0</span><span class="cl-date">March 2026</span></div>
           <ul class="cl-list">
             <li>Initial release — Supabase auth and cloud sync</li>
-            <li>Add, edit, delete expenses</li>
-            <li>Category management with custom colours</li>
+            <li>Add, edit, delete expenses with categories</li>
             <li>Donut and bar charts, CSV and PDF export</li>
             <li>Mobile-first PWA design</li>
           </ul>
@@ -669,22 +636,34 @@ const SB_KEY = 'eyJhbGci...';</div>
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<!-- Charts & PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <script>
-// ╔══════════════════════════════╗
-// ║  PASTE YOUR CREDENTIALS HERE ║
-// ╚══════════════════════════════╝
-const SB_URL = 'https://mdcorbmrsbuwblklxwzk.supabase.co';   // 'https://xxxx.supabase.co'
-const SB_KEY = 'sb_publishable_7u5f8gpanzGerk0r4dG2KQ_KfgN8_Os';   // 'eyJhbGci...'
+// ╔══════════════════════════════════════╗
+// ║  PASTE YOUR FIREBASE CONFIG HERE     ║
+// ╚══════════════════════════════════════╝
+const firebaseConfig = {
+  apiKey: "AIzaSyC1Txsh1sIwHu3xWLP4k7JNuLG23q3Zjdk",
+  authDomain: "expense-tracker-695bf.firebaseapp.com",
+  projectId: "expense-tracker-695bf",
+  storageBucket: "expense-tracker-695bf.firebasestorage.app",
+  messagingSenderId: "1074983885977",
+  appId: "1:1074983885977:web:b495d5e9918605d3e8ec08"
+};
 
-const APP_VERSION = 'v2.0 Advanced Edition';
+// ── globals ──
+const APP_VERSION = 'v2.1';
 const APP_BUILD   = 'May 2026';
 
-let sb=null, user=null, expenses=[], categories=[];
+let fbApp=null, auth=null, db=null, user=null;
+let expenses=[], categories=[];
 let catFilter='', period='month', donutC=null, barC=null;
 
 const DEF_CATS=[
@@ -700,97 +679,127 @@ const DEF_CATS=[
 ];
 
 // ════ INIT ════
-window.addEventListener('load', async()=>{
-  document.getElementById('authVerLabel').textContent = APP_VERSION;
-  if(SB_URL && SB_KEY){
-    sb = supabase.createClient(SB_URL, SB_KEY);
-    sb.auth.onAuthStateChange((evt, session)=>{
-      if(evt==='SIGNED_IN' && session){ user=session.user; loadCache(); showApp(); syncCloud(); }
-      else if(evt==='SIGNED_OUT'){ user=null; expenses=[]; categories=[]; resetAuthUI(); showAuthScreen(); }
-    });
-    const {data:{session}} = await sb.auth.getSession();
-    if(session){ user=session.user; loadCache(); showApp(); syncCloud(); }
-    else showAuthScreen();
-  } else {
-    user={id:'local',email:'local@device',user_metadata:{name:'Me'},created_at:new Date().toISOString()};
-    loadCache(); showApp();
+window.addEventListener('load', ()=>{
+  // If config is empty, run in local-only mode
+  if(!firebaseConfig.apiKey){
+    user={uid:'local',email:'local@device',displayName:'Me',photoURL:null,metadata:{creationTime:new Date().toISOString()}};
+    loadCache(); showApp(); return;
   }
+
+  fbApp = firebase.initializeApp(firebaseConfig);
+  auth  = firebase.auth();
+  db    = firebase.firestore();
+
+  // Single listener — handles login, logout, page reload, Google redirect
+  auth.onAuthStateChanged(async fbUser=>{
+    if(fbUser){
+      user = fbUser;
+      loadCache(); showApp(); await syncCloud();
+    } else {
+      user=null; expenses=[]; categories=[];
+      resetAuthUI(); showAuthScreen();
+    }
+  });
 });
 
-// ════ AUTH ════
-let authMode = 'login';
+// ════ AUTH UI ════
+let authMode='login';
 function setMode(m){
-  authMode = m;
-  document.getElementById('atL').classList.toggle('on', m==='login');
-  document.getElementById('atS').classList.toggle('on', m==='signup');
-  document.getElementById('nameRow').style.display = m==='signup' ? 'block' : 'none';
-  document.getElementById('aBtn').disabled = false;
-  document.getElementById('aBtn').textContent = m==='login' ? 'Sign In' : 'Create Account';
-  document.getElementById('aErr').textContent = '';
-  document.getElementById('aNote').textContent = '';
+  authMode=m;
+  document.getElementById('atL').classList.toggle('on',m==='login');
+  document.getElementById('atS').classList.toggle('on',m==='signup');
+  document.getElementById('nameRow').style.display=m==='signup'?'block':'none';
+  document.getElementById('aBtn').disabled=false;
+  document.getElementById('aBtn').textContent=m==='login'?'Sign In':'Create Account';
+  document.getElementById('aErr').textContent='';
+  document.getElementById('aNote').textContent='';
 }
 function resetAuthUI(){
-  ['aEmail','aPass','aName'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('aErr').textContent = '';
-  document.getElementById('aNote').textContent = '';
-  authMode = 'login';
+  ['aEmail','aPass','aName'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('aErr').textContent='';
+  document.getElementById('aNote').textContent='';
+  authMode='login';
   document.getElementById('atL').classList.add('on');
   document.getElementById('atS').classList.remove('on');
-  document.getElementById('nameRow').style.display = 'none';
-  document.getElementById('aBtn').disabled = false;
-  document.getElementById('aBtn').textContent = 'Sign In';
+  document.getElementById('nameRow').style.display='none';
+  document.getElementById('aBtn').disabled=false;
+  document.getElementById('aBtn').textContent='Sign In';
+  document.getElementById('gBtn').disabled=false;
 }
 function showAuthScreen(){
-  document.getElementById('authScreen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('app').style.display='none';
 }
+
+// ════ EMAIL AUTH ════
 async function doAuth(){
-  const email = document.getElementById('aEmail').value.trim();
-  const pass  = document.getElementById('aPass').value;
-  const name  = document.getElementById('aName').value.trim();
-  const btn   = document.getElementById('aBtn');
-  const err   = document.getElementById('aErr');
-  const note  = document.getElementById('aNote');
-  err.textContent = ''; note.textContent = '';
+  const email=document.getElementById('aEmail').value.trim();
+  const pass=document.getElementById('aPass').value;
+  const name=document.getElementById('aName').value.trim();
+  const btn=document.getElementById('aBtn'),err=document.getElementById('aErr'),note=document.getElementById('aNote');
+  err.textContent=''; note.textContent='';
   if(!email||!pass){err.textContent='Enter email and password.';return;}
   if(pass.length<6){err.textContent='Password must be at least 6 characters.';return;}
   if(authMode==='signup'&&!name){err.textContent='Enter your name.';return;}
   btn.disabled=true; btn.textContent=authMode==='login'?'Signing in…':'Creating account…';
   try{
     if(authMode==='login'){
-      const{error}=await sb.auth.signInWithPassword({email,password:pass});
-      if(error) throw error;
+      await auth.signInWithEmailAndPassword(email,pass);
     } else {
-      const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{name}}});
-      if(error) throw error;
-      if(data.user&&!data.session){ note.textContent='✅ Check your email to confirm, then sign in.'; setMode('login'); return; }
+      const{user:u}=await auth.createUserWithEmailAndPassword(email,pass);
+      await u.updateProfile({displayName:name});
     }
+    // onAuthStateChanged fires automatically
   }catch(e){
-    err.textContent=friendlyErr(e.message);
-    btn.disabled=false; btn.textContent=authMode==='login'?'Sign In':'Create Account';
+    err.textContent=friendlyErr(e.code||e.message);
+    btn.disabled=false;
+    btn.textContent=authMode==='login'?'Sign In':'Create Account';
   }
 }
 
-// ════ PHONE OTP / GOOGLE — removed ════
-
-function friendlyErr(m){
-  if(m.includes('Invalid login')) return 'Incorrect email or password.';
-  if(m.includes('already registered')) return 'Email already registered. Try signing in.';
-  if(m.includes('not confirmed')) return 'Confirm your email first.';
-  if(m.includes('rate limit')) return 'Too many attempts. Wait a moment.';
-  if(m.includes('Token has expired')) return 'OTP expired. Request a new one.';
-  if(m.includes('Invalid OTP')) return 'Incorrect OTP. Check your SMS.';
-  return m;
+// ════ GOOGLE SIGN-IN ════
+async function signInGoogle(){
+  const btn=document.getElementById('gBtn'),err=document.getElementById('aErr');
+  err.textContent=''; btn.disabled=true;
+  const provider=new firebase.auth.GoogleAuthProvider();
+  try{
+    // Try popup first; on mobile it falls back to redirect
+    await auth.signInWithPopup(provider);
+    // onAuthStateChanged handles the rest
+  }catch(e){
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+      // Fallback to redirect for mobile/blocked popups
+      await auth.signInWithRedirect(provider);
+    } else {
+      err.textContent=friendlyErr(e.code||e.message);
+      btn.disabled=false;
+    }
+  }
 }
+
+function friendlyErr(code){
+  const m={
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/user-not-found':'No account with this email. Sign up first.',
+    'auth/email-already-in-use':'Email already registered. Try signing in.',
+    'auth/invalid-email':'Enter a valid email address.',
+    'auth/too-many-requests':'Too many attempts. Try again later.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+    'auth/popup-closed-by-user':'Sign-in was cancelled.',
+  };
+  return m[code]||code;
+}
+
 async function doSignOut(){
-  if(!confirm('Sign out?')) return;
+  if(!confirm('Sign out?'))return;
   expenses=[]; categories=[];
-  if(sb) await sb.auth.signOut();
+  if(auth) await auth.signOut();
   else{ user=null; resetAuthUI(); showAuthScreen(); }
 }
 
 // ════ CACHE ════
-const uid=()=>user?.id||'local';
+const uid=()=>user?.uid||'local';
 const today=()=>new Date().toISOString().split('T')[0];
 function loadCache(){
   expenses=JSON.parse(localStorage.getItem('e_'+uid())||'[]');
@@ -801,33 +810,41 @@ function saveCache(){
   localStorage.setItem('c_'+uid(),JSON.stringify(categories));
 }
 
-// ════ CLOUD ════
+// ════ FIRESTORE SYNC ════
+// Reference helpers
+const expCol=()=>db.collection('users').doc(uid()).collection('expenses');
+const catCol=()=>db.collection('users').doc(uid()).collection('categories');
+
 async function syncCloud(){
-  if(!sb||!user||user.id==='local') return;
+  if(!db||uid()==='local')return;
   setPill('sy');
   try{
-    const[{data:exps,error:ee},{data:cats,error:ce}]=await Promise.all([
-      sb.from('expenses').select('*').eq('user_id',user.id).order('date',{ascending:false}).order('id',{ascending:false}),
-      sb.from('categories').select('*').eq('user_id',user.id)
+    const[expSnap,catSnap]=await Promise.all([
+      expCol().orderBy('date','desc').get(),
+      catCol().get()
     ]);
-    if(ee) throw ee; if(ce) throw ce;
-    expenses=exps||[];
-    if(cats&&cats.length){ categories=cats; } else { await pushCats(); }
+    expenses=expSnap.docs.map(d=>({...d.data(),id:d.id}));
+    if(catSnap.empty){ await pushDefaultCats(); }
+    else{ categories=catSnap.docs.map(d=>({...d.data(),id:d.id})); }
     saveCache(); populateDDs(); buildChips(); renderAll(); setPill('ok');
     const now=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
     ['syncTime','syncTime2'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='Synced '+now;});
     toast('Synced ✅','ok');
-  }catch(e){ setPill('er'); toast('Sync error: '+e.message,'err'); }
+  }catch(e){ setPill('er'); toast('Sync error: '+e.message,'err'); console.error(e); }
 }
-async function pushCats(){
-  if(!sb||!user||user.id==='local') return;
-  try{
-    await sb.from('categories').delete().eq('user_id',user.id);
-    const{data,error}=await sb.from('categories').insert(categories.map(({name,color,budget})=>({name,color,budget:budget||0,user_id:user.id}))).select();
-    if(error) throw error;
-    if(data){ categories=data; saveCache(); }
-  }catch(e){ console.error('pushCats:',e); }
+
+async function pushDefaultCats(){
+  const batch=db.batch();
+  DEF_CATS.forEach(c=>{
+    const ref=catCol().doc();
+    batch.set(ref,{name:c.name,color:c.color,budget:c.budget||0});
+  });
+  await batch.commit();
+  const snap=await catCol().get();
+  categories=snap.docs.map(d=>({...d.data(),id:d.id}));
+  saveCache();
 }
+
 function setPill(s){
   const m={ok:['p-ok','☁ Synced'],sy:['p-sy','↻ Syncing…'],er:['p-er','⚠ Error'],lo:['p-lo','💾 Local']};
   const[cls,txt]=m[s]||m.lo;
@@ -839,53 +856,50 @@ function showApp(){
   document.getElementById('authScreen').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('eDate').value=today();
-  const name=user?.user_metadata?.name||user?.phone||user?.email?.split('@')[0]||'You';
+  const name=user?.displayName||user?.email?.split('@')[0]||'You';
   document.getElementById('pName').textContent=name;
-  document.getElementById('pEmail').textContent=user?.phone||user?.email||'Local';
-  document.getElementById('pavEl').textContent=name[0].toUpperCase();
-  document.getElementById('soNote').textContent=user?.id==='local'?'Local only mode':user?.phone||user?.email||'';
-  const since=user?.created_at?new Date(user.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'—';
+  document.getElementById('pEmail').textContent=user?.email||'Local';
+  // Profile photo — Google accounts have photoURL
+  const pav=document.getElementById('pavEl');
+  if(user?.photoURL){
+    pav.innerHTML=`<img src="${user.photoURL}" alt="${name}" referrerpolicy="no-referrer">`;
+  } else {
+    pav.textContent=name[0].toUpperCase();
+  }
+  document.getElementById('soNote').textContent=user?.email||'Local mode';
+  const since=user?.metadata?.creationTime
+    ?new Date(user.metadata.creationTime).toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}):'—';
   const sinceEl=document.getElementById('statSince');if(sinceEl)sinceEl.textContent=since;
-  if(!sb) setPill('lo');
-  // FAB visible only on Dashboard (tab 0) by default
-  updateFAB(0);
-  populateDDs(); buildChips(); renderAll();
+  if(!db) setPill('lo');
+  updateFAB(0); populateDDs(); buildChips(); renderAll();
 }
 
 // ════ FAB CONTROL ════
 function updateFAB(tabIndex){
-  const fab=document.getElementById('fabBtn');
-  if(!fab) return;
-  // Show only on Dashboard (0) and Expenses (1)
-  fab.classList.toggle('hidden', tabIndex!==0 && tabIndex!==1);
+  const fab=document.getElementById('fabBtn');if(!fab)return;
+  fab.classList.toggle('hidden',tabIndex!==0&&tabIndex!==1);
 }
 
 // ════ HELP ════
-function openHelp(tab='about'){
-  document.getElementById('helpSh').classList.add('open');
-  switchHelpTab(tab);
-}
-function closeHelp(){ document.getElementById('helpSh').classList.remove('open'); }
+function openHelp(tab='about'){document.getElementById('helpSh').classList.add('open');switchHelpTab(tab);}
+function closeHelp(){document.getElementById('helpSh').classList.remove('open');}
 function switchHelpTab(tab){
   document.querySelectorAll('.help-section').forEach(el=>el.classList.remove('on'));
   document.querySelectorAll('.htab').forEach(el=>el.classList.remove('on'));
-  const sec=document.getElementById('ht-'+tab); if(sec) sec.classList.add('on');
-  const tabs=['about','features','setup','trouble','changelog'];
-  const idx=tabs.indexOf(tab);
-  if(idx>=0) document.querySelectorAll('.htab')[idx]?.classList.add('on');
-  const body=document.querySelector('.help-body'); if(body) body.scrollTop=0;
+  const sec=document.getElementById('ht-'+tab);if(sec)sec.classList.add('on');
+  const idx=['about','features','setup','trouble','changelog'].indexOf(tab);
+  if(idx>=0)document.querySelectorAll('.htab')[idx]?.classList.add('on');
+  const body=document.querySelector('.help-body');if(body)body.scrollTop=0;
 }
 
 // ════ NAV ════
-let curTab=0;
 function goNav(i){
   document.querySelectorAll('.screen').forEach((s,j)=>{s.classList.toggle('active',j===i);if(j===i)s.scrollTop=0;});
   document.querySelectorAll('.ni').forEach((n,j)=>n.classList.toggle('on',j===i));
-  curTab=i;
-  updateFAB(i);  // ← controls FAB visibility per tab
-  if(i===1) renderExp();
-  if(i===2) renderCats();
-  if(i===3) updateStats();
+  updateFAB(i);
+  if(i===1)renderExp();
+  if(i===2)renderCats();
+  if(i===3)updateStats();
 }
 
 // ════ HELPERS ════
@@ -895,20 +909,16 @@ function fd(d){return new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'n
 function inr(n){return '₹'+Number(n).toLocaleString('en-IN');}
 function haptic(ms=30){if(navigator.vibrate)navigator.vibrate(ms);}
 
-// ════ TOAST — auto-dismiss after 1800ms, never stuck ════
-function toast(msg, type='ok'){
+// ════ TOAST — auto dismiss, never sticky ════
+function toast(msg,type='ok'){
   const t=document.getElementById('toast');
-  clearTimeout(t._t2);
-  // First hide instantly to reset animation
+  clearTimeout(t._t);
   t.className='toast';
   t.textContent=msg;
-  // Small delay so transition plays
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>{
-      t.className='toast '+type+' show';
-      t._t2=setTimeout(()=>{ t.className='toast'; }, 1800);
-    });
-  });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    t.className='toast '+type+' show';
+    t._t=setTimeout(()=>{ t.className='toast'; },1800);
+  }));
 }
 
 // ════ DROPDOWNS ════
@@ -917,22 +927,22 @@ function populateDDs(){
     const el=document.getElementById(id);if(!el)return;
     const pv=el.value;
     el.innerHTML=categories.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-    if(categories.find(c=>c.name===pv)) el.value=pv;
+    if(categories.find(c=>c.name===pv))el.value=pv;
   });
 }
 
 // ════ PERIOD ════
 function setPeriod(p){
   period=p;
-  document.querySelectorAll('.ptab').forEach((el,i)=>{el.classList.toggle('on',['month','last','3m','year','all'][i]===p);});
+  document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('on',['month','last','3m','year','all'][i]===p));
   renderDash();
 }
 function getPeriodRange(){
   const now=new Date(),y=now.getFullYear(),m=now.getMonth();
-  if(period==='month') return{from:`${y}-${String(m+1).padStart(2,'0')}-01`,to:null};
+  if(period==='month')return{from:`${y}-${String(m+1).padStart(2,'0')}-01`,to:null};
   if(period==='last'){const lm=new Date(y,m,0);return{from:`${lm.getFullYear()}-${String(lm.getMonth()+1).padStart(2,'0')}-01`,to:lm.toISOString().split('T')[0]};}
   if(period==='3m'){const d=new Date(y,m-2,1);return{from:d.toISOString().split('T')[0],to:null};}
-  if(period==='year') return{from:`${y}-01-01`,to:null};
+  if(period==='year')return{from:`${y}-01-01`,to:null};
   return{from:null,to:null};
 }
 
@@ -968,8 +978,8 @@ function renderAll(){renderDash();renderExp();}
 // ════ DASHBOARD ════
 function renderDash(){
   const f=getDashFiltered(),tot=f.reduce((s,e)=>s+Number(e.amt),0);
-  const labels={month:'this month',last:'last month','3m':'last 3 months',year:'this year',all:'all time'};
-  document.getElementById('cTsub').textContent=labels[period]||'';
+  const lbl={month:'this month',last:'last month','3m':'last 3 months',year:'this year',all:'all time'};
+  document.getElementById('cTsub').textContent=lbl[period]||'';
   document.getElementById('cT').textContent=inr(tot);
   document.getElementById('cN').textContent=f.length;
   const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
@@ -992,8 +1002,7 @@ function renderInsights(f,tot){
   document.getElementById('bigExp').textContent=big>0?inr(big):'—';
 }
 function renderBudgetHealth(bc){
-  const cats=categories.filter(c=>c.budget>0);
-  const bh=document.getElementById('cBH'),bhs=document.getElementById('cBHs');
+  const cats=categories.filter(c=>c.budget>0),bh=document.getElementById('cBH'),bhs=document.getElementById('cBHs');
   if(!cats.length){bh.textContent='—';bh.style.color='';bhs.textContent='no budgets set';return;}
   const over=cats.filter(c=>(bc[c.name]||0)>c.budget).length;
   const near=cats.filter(c=>{const p=(bc[c.name]||0)/c.budget;return p>=0.8&&p<=1;}).length;
@@ -1002,25 +1011,25 @@ function renderBudgetHealth(bc){
   else{bh.textContent='✅ On Track';bh.style.color='var(--green)';bhs.textContent='all within budget';}
 }
 function renderBudgetSummary(bc){
-  const sb2=document.getElementById('budgetSummary'),rows=document.getElementById('budgetRows');
-  sb2.style.display='block';
-  const budgetCats=categories.filter(c=>c.budget>0);
-  if(!budgetCats.length){rows.innerHTML=`<div style="text-align:center;padding:10px 0;font-size:.8rem;color:var(--muted)">No budgets set yet. Go to <b style="color:var(--accent)">🏷 Categories</b> and enter a monthly limit.</div>`;return;}
-  const periodNote=period!=='month'?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;padding:6px 8px;background:var(--card2);border-radius:7px">💡 Budget limits are monthly. Spending shown is for the selected period.</div>`:'';
-  let html=periodNote;
-  budgetCats.forEach(c=>{
+  const el=document.getElementById('budgetSummary'),rows=document.getElementById('budgetRows');
+  el.style.display='block';
+  const bc2=categories.filter(c=>c.budget>0);
+  if(!bc2.length){rows.innerHTML=`<div style="text-align:center;padding:10px 0;font-size:.8rem;color:var(--muted)">No budgets set yet. Go to <b style="color:var(--accent)">🏷 Categories</b> and enter a monthly limit.</div>`;return;}
+  const note=period!=='month'?`<div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;padding:6px 8px;background:var(--card2);border-radius:7px">💡 Budget limits are monthly. Spending shown is for the selected period.</div>`:'';
+  let html=note;
+  bc2.forEach(c=>{
     const spent=bc[c.name]||0,pct=Math.min(100,Math.round((spent/c.budget)*100)),clr=pct>=100?'var(--red)':pct>=80?'var(--yellow)':'var(--green)';
     html+=`<div class="sum-row"><span class="sum-lbl">${c.name}</span><span class="sum-val" style="color:${clr}">${inr(spent)}<span style="font-weight:400;font-size:.7rem;color:var(--muted)"> / ${inr(c.budget)}</span><span style="font-size:.68rem;color:${clr};margin-left:3px">(${pct}%)</span></span></div><div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:11px"><div style="height:100%;width:${pct}%;background:${clr};border-radius:3px;transition:width .5s ease"></div></div>`;
   });
-  const tb=budgetCats.reduce((s,c)=>s+c.budget,0),ts=budgetCats.reduce((s,c)=>s+(bc[c.name]||0),0),tp=Math.min(100,Math.round((ts/tb)*100)),tc=tp>=100?'var(--red)':tp>=80?'var(--yellow)':'var(--green)';
+  const tb=bc2.reduce((s,c)=>s+c.budget,0),ts=bc2.reduce((s,c)=>s+(bc[c.name]||0),0),tp=Math.min(100,Math.round((ts/tb)*100)),tc=tp>=100?'var(--red)':tp>=80?'var(--yellow)':'var(--green)';
   html+=`<div class="sum-row" style="border-top:1px solid #6c63ff22;margin-top:4px;padding-top:10px"><span class="sum-lbl" style="font-weight:800;color:var(--text)">Total</span><span class="sum-val" style="color:${tc}">${inr(ts)} / ${inr(tb)}</span></div>`;
   rows.innerHTML=html;
 }
 function renderRecent(){
   const el=document.getElementById('recentList');
-  const recent=expenses.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.id-a.id).slice(0,5);
+  const recent=expenses.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||String(b.id).localeCompare(String(a.id))).slice(0,5);
   if(!recent.length){el.innerHTML=`<div class="empty"><div class="ico">🌱</div><p>No expenses yet</p><p>Tap + to add your first one!</p></div>`;return;}
-  el.innerHTML=recent.map(e=>`<div class="ei" onclick="openEditSh(${e.id})" style="cursor:pointer"><div class="edot" style="background:${cc(e.cat)}"></div><div class="ebody"><div class="en">${e.name}</div><div class="em">${fd(e.date)} · ${e.cat}</div></div><div class="eamt">${inr(e.amt)}</div></div>`).join('');
+  el.innerHTML=recent.map(e=>`<div class="ei" onclick="openEditSh('${e.id}')" style="cursor:pointer"><div class="edot" style="background:${cc(e.cat)}"></div><div class="ebody"><div class="en">${e.name}</div><div class="em">${fd(e.date)} · ${e.cat}</div></div><div class="eamt">${inr(e.amt)}</div></div>`).join('');
 }
 function renderDonut(f){
   const bc={};f.forEach(e=>{bc[e.cat]=(bc[e.cat]||0)+Number(e.amt);});
@@ -1040,18 +1049,18 @@ function renderBarChart(){
 
 // ════ EXPENSES LIST ════
 function renderExp(){
-  const f=getExpFiltered().slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.id-a.id);
+  const f=getExpFiltered().slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||String(b.id).localeCompare(String(a.id)));
   const el=document.getElementById('expList'),info=document.getElementById('eInfo'),etot=document.getElementById('eTotal');
   if(info)info.textContent=`${f.length} of ${expenses.length} records`;
   const tot=f.reduce((s,e)=>s+Number(e.amt),0);
   if(etot)etot.textContent=f.length?inr(tot):'';
   const q=(document.getElementById('searchQ')?.value||'').trim();
   if(!f.length){el.innerHTML=`<div class="empty"><div class="ico">🧾</div><p>${q?'No results found':'No expenses yet'}</p></div>`;return;}
-  function hl(text){if(!q)return text;const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return text.replace(re,'<mark style="background:#6c63ff44;color:var(--text);border-radius:2px">$1</mark>');}
-  el.innerHTML=f.map(e=>`<div class="ei"><div class="edot" style="background:${cc(e.cat)}"></div><div class="ebody"><div class="en">${hl(e.name)}</div><div class="em">${fd(e.date)} · <span class="bdg" style="background:${cc(e.cat)}22;color:${cc(e.cat)}">${e.cat}</span>${e.note?' · '+e.note:''}</div></div><div><div class="eamt">${inr(e.amt)}</div><div class="eact"><button class="ed" onclick="openEditSh(${e.id})">✏</button><button class="ex" onclick="delE(${e.id})">✕</button></div></div></div>`).join('');
+  const hl=text=>{if(!q)return text;const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');return text.replace(re,'<mark style="background:#6c63ff44;color:var(--text);border-radius:2px">$1</mark>');};
+  el.innerHTML=f.map(e=>`<div class="ei"><div class="edot" style="background:${cc(e.cat)}"></div><div class="ebody"><div class="en">${hl(e.name)}</div><div class="em">${fd(e.date)} · <span class="bdg" style="background:${cc(e.cat)}22;color:${cc(e.cat)}">${e.cat}</span>${e.note?' · '+e.note:''}</div></div><div><div class="eamt">${inr(e.amt)}</div><div class="eact"><button class="ed" onclick="openEditSh('${e.id}')">✏</button><button class="ex" onclick="delE('${e.id}')">✕</button></div></div></div>`).join('');
 }
 
-// ════ ADD / EDIT / DELETE ════
+// ════ ADD ════
 function openAddSh(){document.getElementById('addSh').classList.add('open');setTimeout(()=>document.getElementById('eName').focus(),300);}
 function closeAddSh(){document.getElementById('addSh').classList.remove('open');}
 async function addExp(){
@@ -1059,8 +1068,13 @@ async function addExp(){
   if(!name||!amt||isNaN(amt)||!date){toast('Fill all required fields','err');return;}
   const btn=document.getElementById('addBtn');btn.disabled=true;btn.textContent='Saving…';
   try{
-    if(sb&&user&&user.id!=='local'){const{data,error}=await sb.from('expenses').insert([{name,amt,cat,date,note,user_id:user.id}]).select();if(error)throw error;expenses.unshift(data[0]);}
-    else{expenses.unshift({id:Date.now(),name,amt,cat,date,note});}
+    const data={name,amt,cat,date,note,createdAt:new Date().toISOString()};
+    if(db&&uid()!=='local'){
+      const ref=await expCol().add(data);
+      expenses.unshift({...data,id:ref.id});
+    } else {
+      expenses.unshift({...data,id:Date.now().toString()});
+    }
     saveCache();checkBudgetAlert(cat,date);
     ['eName','eAmt','eNote'].forEach(id=>document.getElementById(id).value='');
     closeAddSh();haptic();toast('Saved ✅','ok');renderAll();
@@ -1076,6 +1090,8 @@ function checkBudgetAlert(cat,date){
   if(pct>=100)toast(`⚠ ${cat} budget exceeded!`,'err');
   else if(pct>=80)toast(`🔔 ${cat} at ${Math.round(pct)}% of budget`,'info');
 }
+
+// ════ EDIT ════
 function openEditSh(id){
   const e=expenses.find(x=>x.id==id);if(!e)return;
   document.getElementById('eId').value=id;document.getElementById('edName').value=e.name;document.getElementById('edAmt').value=e.amt;document.getElementById('edDate').value=e.date;document.getElementById('edNote').value=e.note||'';
@@ -1087,14 +1103,14 @@ async function saveEdit(){
   const id=document.getElementById('eId').value,idx=expenses.findIndex(x=>x.id==id);if(idx<0)return;
   const upd={...expenses[idx],name:document.getElementById('edName').value.trim(),amt:parseFloat(document.getElementById('edAmt').value),cat:document.getElementById('edCat').value,date:document.getElementById('edDate').value,note:document.getElementById('edNote').value.trim()};
   try{
-    if(sb&&user&&user.id!=='local'){const{error}=await sb.from('expenses').update({name:upd.name,amt:upd.amt,cat:upd.cat,date:upd.date,note:upd.note}).eq('id',id).eq('user_id',user.id);if(error)throw error;}
+    if(db&&uid()!=='local') await expCol().doc(id).update({name:upd.name,amt:upd.amt,cat:upd.cat,date:upd.date,note:upd.note});
     expenses[idx]=upd;saveCache();closeEditSh();haptic();toast('Updated ✅','ok');renderAll();
   }catch(e){toast('Update failed: '+e.message,'err');}
 }
 async function delE(id){
   if(!confirm('Delete this expense?'))return;
   try{
-    if(sb&&user&&user.id!=='local'){const{error}=await sb.from('expenses').delete().eq('id',id).eq('user_id',user.id);if(error)throw error;}
+    if(db&&uid()!=='local') await expCol().doc(id).delete();
     expenses=expenses.filter(e=>e.id!=id);saveCache();haptic(60);toast('Deleted','ok');renderAll();
   }catch(e){toast('Delete failed: '+e.message,'err');}
 }
@@ -1109,34 +1125,67 @@ function renderCats(){
     return`<div class="ci"><div class="ci-top"><div class="csw" style="background:${c.color}"></div><input class="cni" value="${c.name}" onblur="renCat(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()"><input type="color" value="${c.color}" style="width:28px;height:26px;padding:2px;border:none;background:none;cursor:pointer;border-radius:5px;flex-shrink:0" onchange="chgClr(${i},this.value)"><button class="btn bsm br" style="padding:5px 8px" onclick="delCat(${i})">✕</button></div><div class="ci-budget"><div class="budget-meta"><span class="budget-spent">${inr(spent)} spent this month</span><div class="budget-input-wrap"><span>₹</span><input type="number" class="budget-inp" value="${budget||''}" placeholder="No limit" min="0" onchange="setBudget(${i},this.value)" inputmode="decimal"></div></div>${budget>0?`<div class="budget-bar"><div class="budget-fill" style="width:${pct}%;background:${barClr}"></div></div><div style="font-size:.67rem;color:${barClr};text-align:right">${pct}% of ${inr(budget)}</div>`:''}</div></div>`;
   }).join('');
 }
-async function setBudget(i,val){categories[i].budget=parseFloat(val)||0;saveCache();if(sb&&user&&user.id!=='local')await pushCats();renderCats();renderDash();}
+async function setBudget(i,val){
+  categories[i].budget=parseFloat(val)||0;saveCache();
+  if(db&&uid()!=='local'&&categories[i].id) await catCol().doc(categories[i].id).update({budget:categories[i].budget});
+  renderCats();renderDash();
+}
 function openCatSh(){document.getElementById('catErr').textContent='';document.getElementById('ncName').value='';document.getElementById('ncBudget').value='';document.getElementById('catSh').classList.add('open');}
 function closeCatSh(){document.getElementById('catSh').classList.remove('open');}
 async function addCat(){
   const name=document.getElementById('ncName').value.trim(),color=document.getElementById('ncCol').value,budget=parseFloat(document.getElementById('ncBudget').value)||0;
   if(!name){document.getElementById('catErr').textContent='Enter a name';return;}
   if(categories.find(c=>c.name.toLowerCase()===name.toLowerCase())){document.getElementById('catErr').textContent='Already exists!';return;}
-  categories.push({name,color,budget});saveCache();
-  if(sb&&user&&user.id!=='local')await pushCats();
-  populateDDs();buildChips();renderCats();closeCatSh();toast('Category added','ok');
+  try{
+    let newCat={name,color,budget};
+    if(db&&uid()!=='local'){const ref=await catCol().add(newCat);newCat.id=ref.id;}
+    else{newCat.id=Date.now().toString();}
+    categories.push(newCat);saveCache();
+    populateDDs();buildChips();renderCats();closeCatSh();toast('Category added','ok');
+  }catch(e){toast('Failed to add: '+e.message,'err');}
 }
 async function renCat(i,n){
   n=n.trim();if(!n||categories.find((c,j)=>j!==i&&c.name.toLowerCase()===n.toLowerCase())){renderCats();return;}
-  const old=categories[i].name;expenses=expenses.map(e=>e.cat===old?{...e,cat:n}:e);categories[i].name=n;saveCache();
-  if(sb&&user&&user.id!=='local'){await pushCats();await sb.from('expenses').update({cat:n}).eq('cat',old).eq('user_id',user.id);}
+  const old=categories[i].name,catId=categories[i].id;
+  expenses=expenses.map(e=>e.cat===old?{...e,cat:n}:e);
+  categories[i].name=n;saveCache();
+  if(db&&uid()!=='local'){
+    try{
+      if(catId) await catCol().doc(catId).update({name:n});
+      // Update all affected expenses
+      const snap=await expCol().where('cat','==',old).get();
+      const batch=db.batch();
+      snap.docs.forEach(d=>batch.update(d.ref,{cat:n}));
+      await batch.commit();
+    }catch(e){console.error('renCat error:',e);}
+  }
   populateDDs();buildChips();toast('Renamed','ok');renderAll();
 }
 async function delCat(i){
   if(categories.length<=1){toast('Keep at least one category','err');return;}
   const cat=categories[i],used=expenses.filter(e=>e.cat===cat.name).length,fb=categories.find((_,j)=>j!==i).name;
   if(used>0&&!confirm(`"${cat.name}" used in ${used} expense(s). Move to "${fb}"?`))return;
-  expenses=expenses.map(e=>e.cat===cat.name?{...e,cat:fb}:e);categories.splice(i,1);saveCache();
-  if(sb&&user&&user.id!=='local'){await pushCats();if(used>0)await sb.from('expenses').update({cat:fb}).eq('cat',cat.name).eq('user_id',user.id);}
+  expenses=expenses.map(e=>e.cat===cat.name?{...e,cat:fb}:e);
+  categories.splice(i,1);saveCache();
+  if(db&&uid()!=='local'){
+    try{
+      if(cat.id) await catCol().doc(cat.id).delete();
+      if(used>0){
+        const snap=await expCol().where('cat','==',cat.name).get();
+        const batch=db.batch();snap.docs.forEach(d=>batch.update(d.ref,{cat:fb}));
+        await batch.commit();
+      }
+    }catch(e){console.error('delCat error:',e);}
+  }
   populateDDs();buildChips();renderCats();toast('Removed','ok');renderAll();
 }
-async function chgClr(i,clr){categories[i].color=clr;saveCache();if(sb&&user&&user.id!=='local')await pushCats();renderCats();renderAll();}
+async function chgClr(i,clr){
+  categories[i].color=clr;saveCache();
+  if(db&&uid()!=='local'&&categories[i].id) await catCol().doc(categories[i].id).update({color:clr}).catch(()=>{});
+  renderCats();renderAll();
+}
 
-// ════ PROFILE ════
+// ════ PROFILE STATS ════
 function updateStats(){
   const tot=expenses.reduce((s,e)=>s+Number(e.amt),0),cats=new Set(expenses.map(e=>e.cat)).size;
   document.getElementById('statTotal').textContent=expenses.length;
@@ -1156,7 +1205,7 @@ function expPDF(){
   doc.setFillColor(15,17,23);doc.rect(0,0,210,297,'F');
   doc.setTextColor(200,205,220);doc.setFontSize(16);doc.setFont(undefined,'bold');doc.text('Expense Report',14,18);
   doc.setFontSize(9);doc.setFont(undefined,'normal');doc.setTextColor(120,130,160);
-  doc.text(`User: ${user?.phone||user?.email||'Local'} | ${new Date().toLocaleDateString('en-IN')} | ${APP_VERSION}`,14,27);
+  doc.text(`User: ${user?.email||'Local'} | ${new Date().toLocaleDateString('en-IN')} | ${APP_VERSION}`,14,27);
   const tot=f.reduce((s,e)=>s+Number(e.amt),0);
   doc.setFontSize(10);doc.setTextColor(200,205,220);doc.text(`Total: ₹${tot.toLocaleString('en-IN')} | Records: ${f.length}`,14,36);
   doc.autoTable({startY:43,head:[['Date','Description','Category','Amount','Note']],body:f.map(e=>[fd(e.date),e.name,e.cat,'₹'+Number(e.amt).toLocaleString('en-IN'),e.note||'']),styles:{fillColor:[26,29,39],textColor:[200,205,220],fontSize:8.5,cellPadding:4},headStyles:{fillColor:[108,99,255],textColor:[255,255,255],fontStyle:'bold'},alternateRowStyles:{fillColor:[33,37,58]},columnStyles:{3:{halign:'right'}}});
@@ -1164,7 +1213,7 @@ function expPDF(){
   doc.save(`expense_report_${today()}.pdf`);toast('PDF downloaded','ok');
 }
 function expJSON(){
-  const blob=new Blob([JSON.stringify({expenses,categories,version:APP_VERSION,user:user?.phone||user?.email,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({expenses,categories,version:APP_VERSION,user:user?.email,exported:new Date().toISOString()},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`backup_${today()}.json`;a.click();toast('Backup downloaded','ok');
 }
 async function impJSON(evt){
@@ -1175,17 +1224,42 @@ async function impJSON(evt){
       const d=JSON.parse(e.target.result);
       if(!d.expenses||!d.categories){toast('Invalid file','err');return;}
       if(!confirm(`Import ${d.expenses.length} expenses? This replaces current data.`))return;
-      expenses=d.expenses;categories=d.categories;saveCache();
-      if(sb&&user&&user.id!=='local'){toast('Uploading to cloud…','info');await sb.from('expenses').delete().eq('user_id',user.id);if(expenses.length)await sb.from('expenses').insert(expenses.map(({name,amt,cat,date,note})=>({name,amt,cat,date,note,user_id:user.id})));await pushCats();}
-      populateDDs();buildChips();renderAll();renderCats();toast(`Imported ${expenses.length} expenses ✅`,'ok');
-    }catch{toast('Failed to read file','err');}
+      // Upload to Firestore
+      if(db&&uid()!=='local'){
+        toast('Uploading…','info');
+        // Delete existing
+        const[eSnap,cSnap]=await Promise.all([expCol().get(),catCol().get()]);
+        const delBatch=db.batch();
+        eSnap.docs.forEach(doc=>delBatch.delete(doc.ref));
+        cSnap.docs.forEach(doc=>delBatch.delete(doc.ref));
+        await delBatch.commit();
+        // Insert new
+        const addBatch=db.batch();
+        d.expenses.forEach(({name,amt,cat,date,note,createdAt})=>{addBatch.set(expCol().doc(),{name,amt,cat,date,note:note||'',createdAt:createdAt||new Date().toISOString()});});
+        d.categories.forEach(({name,color,budget})=>{addBatch.set(catCol().doc(),{name,color,budget:budget||0});});
+        await addBatch.commit();
+        await syncCloud();
+      } else {
+        expenses=d.expenses;categories=d.categories;saveCache();
+        populateDDs();buildChips();renderAll();renderCats();
+      }
+      toast(`Imported ${d.expenses.length} expenses ✅`,'ok');
+    }catch(e){toast('Failed: '+e.message,'err');}
   };
   r.readAsText(file);evt.target.value='';
 }
 async function resetAll(){
   if(!confirm('Delete ALL your expenses permanently? Cannot be undone.'))return;
+  if(db&&uid()!=='local'){
+    toast('Deleting…','info');
+    const[eSnap,cSnap]=await Promise.all([expCol().get(),catCol().get()]);
+    const batch=db.batch();
+    eSnap.docs.forEach(d=>batch.delete(d.ref));
+    cSnap.docs.forEach(d=>batch.delete(d.ref));
+    await batch.commit();
+    await pushDefaultCats();
+  }
   expenses=[];categories=DEF_CATS.map(c=>({...c}));saveCache();
-  if(sb&&user&&user.id!=='local'){await sb.from('expenses').delete().eq('user_id',user.id);await pushCats();}
   populateDDs();buildChips();renderAll();renderCats();toast('All data cleared','ok');
 }
 </script>
